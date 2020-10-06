@@ -1,0 +1,159 @@
+package selenuim;
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.io.File;
+
+import javax.swing.JOptionPane;
+
+import org.openqa.selenium.*;
+
+
+public class autofill {
+	public String result;
+	
+	 public String getresult() {
+		return this.result;
+	}
+	public void fillform(String city,String phonenumber, String cardnumber) {
+		
+try {
+		//setting the driver executable
+		//String chromedriverPath="";
+	/*
+		String path = System.getProperty("user.dir");
+		String chromedriverPath= path+"/resources/chromedriver";
+		//String chromedriverPath="/home/elkhradely/eclipse-workspace/we project/src/selenuim/chromedriver";
+				if(System.getProperty("os.name").toLowerCase().contains("win"))
+				   chromedriverPath+=".exe";
+				   
+				   	System.out.println(chromedriverPath);
+
+				System.setProperty("webdriver.chrome.driver",chromedriverPath);
+			*/
+				
+	
+	String Path = new File("").getAbsolutePath();
+	String chromedriverPath= Path+"/resources/chromedriver";
+	if(System.getProperty("os.name").toLowerCase().contains("win"))
+		   chromedriverPath+=".exe";
+	
+	System.out.println(chromedriverPath);
+		System.setProperty("webdriver.chrome.driver",chromedriverPath);
+
+		//Initiating your chromedriver
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
+
+		WebDriver driver=new ChromeDriver(options);
+
+		//Applied wait time
+		//driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+		//maximize window
+		//driver.manage().window().maximize();
+
+		//open browser with desried URL
+
+
+	    try {
+	          driver.get("https://my.te.eg/#/anonymous/AdslPayment?lang=en");
+	        // first step
+
+	         
+	          WebElement cityelement=   driver.findElement(By.name("pAreaCode"));
+	         cityelement.sendKeys(city);
+	         WebElement phonenumberelement=  driver.findElement(By.name("pPhoneNo"));
+	       phonenumberelement.sendKeys(phonenumber);
+	       WebElement emailelement= driver.findElement(By.name("pEmail"));
+	      emailelement.sendKeys("sahilpay@gmail.com");
+	      WebElement verifybuttonelement= driver.findElement(By.xpath("//*[@id=\"content-block\"]/div/app-adsl-payment/div/div/div/form/div[3]/div/div[2]/button\r\n"
+	      		+ ""));
+	      verifybuttonelement.click();
+	      try{
+	        	WebDriverWait w1 = new WebDriverWait(driver,2);
+
+	               w1.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/ecare-app/div/main/div/div/div/toast-container/div/div/div[2]/span\n")));
+	            result=   driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/toast-container/div/div/div[2]/span\n")).getText();
+	        }
+	        catch (Exception e) {
+	            //waiting time
+	        	WebDriverWait w2 = new WebDriverWait(driver,2);
+
+	        	   w2.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/div[3]/div/div[1]/span")));
+
+	            //second step
+	              driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[1]/form/div[2]/span/label")).click();
+	            //waiting time
+	              WebDriverWait w3 = new WebDriverWait(driver,2);
+	               w3.until(ExpectedConditions.visibilityOfElementLocated(By.id("TXT_VoucherNumber")));
+	            //third step
+	            WebElement cardnumberelement=  driver.findElement(By.id("TXT_VoucherNumber"));
+	            cardnumberelement.sendKeys(cardnumber);
+	              driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[1]/form/div[3]/div[3]/label/input\n")).click();
+	           
+	            	  
+	            	  if(driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[1]/form/div[4]/button[1]\n")).isEnabled())
+	            	  { 
+	            		  driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[1]/form/div[4]/button[1]\n")).click();
+	            	  }
+	            	  else {
+	            		  result="WRONG CARD NUMBER (LESS THAN 16 DIGITS)";
+	            		  return;
+	            	  }
+	             
+	              //waiting time
+	              WebDriverWait w4 = new WebDriverWait(driver,2);
+	               w4.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[2]/div/div/div/div[2]/p[2]\n")));
+	            // fourth step
+	            try {
+	                  driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[2]/div/div/div/div[3]/button\n")).click();
+
+	            }catch (Exception e2) {
+	                result="WRONG CARD NUMBER";
+	            }//failed payment result
+	            try {
+	            	  WebDriverWait w5 = new WebDriverWait(driver,1);
+	            	w5.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/toast-container/div/div/div[2]/span")));
+	                result =   driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/toast-container/div/div")).getText();
+	            } catch (Exception e3) {
+	                //  console.log("wrong card exception", ex.message);
+	            }
+
+	            //successfull payment ressult
+	            try {
+	            	  WebDriverWait w6 = new WebDriverWait(driver,1);
+
+	            	w6.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[4]/div/div/h3")));
+	                result =   driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/app-adsl-payment-options/div[4]/div/div/h3")).getText();
+
+	            } catch (Exception e4) {
+	                // console.log("right card exception", ex.message);
+	            }
+
+
+	            //   driver.wait(until.titleIs("TE ecare"), 10000000000);
+	        }
+
+	    }
+
+	    finally {
+	    	this.result=result;
+	    }
+		//closing the browser
+		driver.close();
+		
+}catch (Exception e) {
+	System.out.println("error in path ");
+
+}
+	}
+	
+
+
+}

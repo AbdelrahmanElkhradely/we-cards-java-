@@ -1,0 +1,1593 @@
+package gui;
+import java.awt.EventQueue;
+
+import java.io.FileInputStream;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import database.DBconnection;
+import selenuim.autofill;
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.io.File;
+
+import org.openqa.selenium.*;
+
+
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
+import org.openqa.selenium.By;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.io.File;
+
+import org.openqa.selenium.*;
+
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import java.io.File; 
+import java.awt.CardLayout;
+
+import javax.swing.JPanel;
+
+//import org.jdatepicker.impl.JDatePanelImpl;
+//import org.jdatepicker.impl.JDatePickerImpl;
+//import org.jdatepicker.impl.UtilDateModel;
+
+
+import database.DBconnection;
+//import net.bytebuddy.agent.builder.AgentBuilder.CircularityLock.Default;
+ import algorithms.Paying;
+import javax.swing.JLabel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.awt.Font;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JSeparator;
+import com.toedter.calendar.JDateChooser;
+
+//import com.toedter.calendar.JDateChooser;
+public class MainWindow  {
+     
+	private JFrame frame;
+	private JLayeredPane layeredPane = new JLayeredPane();
+	private JTextField CardNumber;
+	private JTextField SerialNumber;
+	private JTextField phonenumber;
+	 private JTextField amount;
+	 
+	 public  String mycount5;
+	 public		String mycount10;
+	 public		String mycount15;
+	 public		String mycount25;
+	 public	String mycount30;
+	 public	String mycount40;
+	 public		String mycount50;
+	 public	String mycount60;
+	 public	String mycount75;
+	 public	String mycount100;
+		public	String mycount150;
+		public	String mybalance;
+		//-----------------
+		 public  String usecount5;
+		 public		String usecount10;
+		 public		String usecount15;
+		 public		String usecount25;
+		 public	String usecount30;
+		 public	String usecount40;
+		 public		String usecount50;
+		 public	String usecount60;
+		 public	String usecount75;
+		 public	String usecount100;
+			public	String usecount150;
+			public	String usebalance;
+			//------------------
+			 public  String corrcount5;
+			 public		String corrcount10;
+			 public		String corrcount15;
+			 public		String corrcount25;
+			 public	String corrcount30;
+			 public	String corrcount40;
+			 public		String corrcount50;
+			 public	String corrcount60;
+			 public	String corrcount75;
+			 public	String corrcount100;
+				public	String corrcount150;
+				public	String corrbalance;
+				private JTable mytable;
+				private JTable usetable;
+				private JTable corrtable;
+				private JTable numtable;
+
+			    private List<String[]> list = null;;
+			    DefaultTableModel mymodel;
+			    DefaultTableModel usemodel;
+			    DefaultTableModel corrmodel;
+			    DefaultTableModel nummodel;
+
+
+			    private JTextField textField;
+			    
+     public String getamount() {
+    	 return amount.getText().toString();
+     }
+	/**
+	 * Launch the application.
+	 */
+
+    // Function to check String for only number 
+    public  boolean isnumber(String str) 
+    {  str = str.toLowerCase();
+    char[] charArray = str.toCharArray();
+    for (int i = 0; i < charArray.length; i++) {
+       char ch = charArray[i];
+       if ((ch >= 'a' && ch <= 'z')) {
+          return false;
+       }
+    }
+    return true;
+    }
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MainWindow window = new MainWindow();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	public void switchpanel(JPanel panel) {
+	
+		layeredPane.removeAll();
+		
+		layeredPane.add(panel);
+		
+		layeredPane.repaint();
+		
+		layeredPane.revalidate();
+	}
+	/**
+	 * Create the application.
+	 */
+	public MainWindow() {
+		
+		initialize();
+		
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(200, 200, 700, 600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		layeredPane.setBounds(30, 58, 641, 500);
+		frame.getContentPane().add(layeredPane);
+		layeredPane.setLayout(new CardLayout(0, 0));
+		
+		JPanel AddNewCard = new JPanel();
+		layeredPane.add(AddNewCard, "name_1066293722347");
+		AddNewCard.setLayout(null);
+		
+		JLabel lblAddNewCard_1 = new JLabel("ADD NEW CARD");
+		lblAddNewCard_1.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblAddNewCard_1.setBounds(235, 12, 219, 30);
+		AddNewCard.add(lblAddNewCard_1);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(0, 41, 641, 446);
+		AddNewCard.add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblCardType = new JLabel("CARD TYPE");
+		lblCardType.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblCardType.setBounds(27, 39, 125, 25);
+		panel.add(lblCardType);
+		
+		JComboBox<Integer> cardtype = new JComboBox<Integer>();
+	//	cardtype.addItem("");
+		cardtype.addItem(5);
+		cardtype.addItem(10);
+		cardtype.addItem(15);
+		cardtype.addItem(25);
+		cardtype.addItem(30);
+		cardtype.addItem(40);
+		cardtype.addItem(50);
+		cardtype.addItem(60);
+		cardtype.addItem(75);
+		cardtype.addItem(100);
+		cardtype.addItem(150);
+
+
+		cardtype.setBounds(216, 36, 176, 30);
+		panel.add(cardtype);
+		
+		JLabel lblCardNumber = new JLabel("CARD NUMBER");
+		lblCardNumber.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblCardNumber.setBounds(27, 96, 125, 30);
+		panel.add(lblCardNumber);
+		
+		CardNumber = new JTextField();
+		CardNumber.setBounds(216, 97, 176, 30);
+		panel.add(CardNumber);
+		CardNumber.setColumns(10);
+		
+		
+		JLabel label = new JLabel("SERIAL NUMBER");
+		label.setFont(new Font("Dialog", Font.BOLD, 15));
+		label.setBounds(27, 165, 155, 30);
+		panel.add(label);
+		
+		SerialNumber = new JTextField();
+		SerialNumber.setText(" ");
+		SerialNumber.setColumns(10);
+		SerialNumber.setBounds(216, 166, 176, 30);
+		panel.add(SerialNumber);
+		
+		JButton btnSubmit = new JButton("SUBMIT");
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DBconnection db = new DBconnection();
+				String cn=CardNumber.getText();
+					String sn=SerialNumber.getText();
+				if(cn.length()==16 &&
+						isnumber(cn)  &&
+						isnumber(sn) &&
+						sn.length() >= 10 && !cardtype.getSelectedItem().toString().isEmpty()) {
+			  String result=  db.AddCard(cardtype.getSelectedItem().toString(), CardNumber.getText(),SerialNumber.getText() );
+			  if(result.equals("card number or serial number used before..."));
+			  JOptionPane.showMessageDialog(null, result);
+			 
+			  CardNumber.setText("");
+			  SerialNumber.setText("");
+				}
+				else
+				{
+					
+					  JOptionPane.showMessageDialog(null, "Invalid card number....");
+
+				}
+			}
+		});
+		btnSubmit.setBounds(216, 229, 117, 25);
+		panel.add(btnSubmit);
+		
+		JSeparator separator_1 = new JSeparator();
+		separator_1.setBounds(12, 266, 613, 46);
+		panel.add(separator_1);
+		
+	
+		
+		JLabel lblNewLabel_3 = new JLabel("SELECT EXCEL FILE");
+		lblNewLabel_3.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 15));
+		lblNewLabel_3.setBounds(27, 332, 186, 50);
+		panel.add(lblNewLabel_3);
+		
+		JButton btnSelectFile = new JButton("SELECT FILE");
+		btnSelectFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser jfc = new JFileChooser();
+				panel.add(jfc);
+
+				int returnValue = jfc.showOpenDialog(null);
+				// int returnValue = jfc.showSaveDialog(null);
+				String r;
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = jfc.getSelectedFile();
+					System.out.println(selectedFile.getAbsolutePath());
+					DBconnection db = new DBconnection();
+					if(selectedFile.getAbsolutePath().toString().contains("")) {
+						r= db.AddCardFromExcel(selectedFile.getAbsolutePath().toString());
+					  JOptionPane.showMessageDialog(null,r);
+					}
+					else {
+						  JOptionPane.showMessageDialog(null, "Invalid file.......");
+
+					}
+				}
+			}
+		}); 
+		btnSelectFile.setBounds(216, 332, 356, 50);
+		panel.add(btnSelectFile);
+		
+		JSeparator separator_19 = new JSeparator();
+		separator_19.setBounds(-81, 0, 800, 14);
+		panel.add(separator_19);
+		
+
+		
+		
+		JSeparator separator = new JSeparator();
+		separator.setBounds(321, 402, 1, 2);
+		AddNewCard.add(separator);
+		
+		JSeparator separator_10 = new JSeparator();
+		separator_10.setBounds(-32, 41, 800, 14);
+		AddNewCard.add(separator_10);
+		
+		JPanel PayInternetPill = new JPanel();
+		layeredPane.add(PayInternetPill, "name_1093696643801");
+		PayInternetPill.setLayout(null);
+		
+		JLabel lblRenewInternetSubscription = new JLabel("RENEW INTERNET SUBSCRIPTION");
+		lblRenewInternetSubscription.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblRenewInternetSubscription.setBounds(141, 12, 382, 30);
+		PayInternetPill.add(lblRenewInternetSubscription);
+		
+		JLabel lblCity = new JLabel("CITY");
+		lblCity.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblCity.setBounds(25, 93, 125, 25);
+		PayInternetPill.add(lblCity);
+		
+		JComboBox<String> city = new JComboBox<String>();
+		
+		city.setBounds(214, 90, 176, 30);
+		city.addItem("Alexandria");
+		city.addItem("Cairo");
+		city.addItem("Al Gharbya");
+		city.addItem("Assiut");
+		city.addItem("Aswan");
+		city.addItem("Behira");
+		city.addItem("Beni Souif");
+		city.addItem("Dakahliya");
+		city.addItem("Damietta");
+		city.addItem("Fayoum");
+		city.addItem("Ismalia");
+		city.addItem("Kafr El-Sheikh");
+		city.addItem("Luxor");
+		city.addItem("Matroh");
+		city.addItem("Menia");
+		city.addItem("North Sinai");
+		city.addItem("Port Said");
+		city.addItem("Qaliobia");
+		city.addItem("Quina");
+		city.addItem("Red Sea");
+		city.addItem("Souhag");
+		city.addItem("South Sinai");
+		city.addItem("Suez");
+		city.addItem("Wadi Gadid");
+		city.addItem("10th of Ramadan");
+
+		
+
+		PayInternetPill.add(city);
+		
+		JLabel lblPhoneNumber = new JLabel("PHONE NUMBER");
+		lblPhoneNumber.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblPhoneNumber.setBounds(25, 150, 155, 30);
+		PayInternetPill.add(lblPhoneNumber);
+		
+		phonenumber = new JTextField();
+		phonenumber.setColumns(10);
+		phonenumber.setBounds(214, 151, 176, 30);
+		PayInternetPill.add(phonenumber);
+		
+		JLabel lblAmount = new JLabel("AMOUNT");
+		lblAmount.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblAmount.setBounds(25, 219, 155, 30);
+		PayInternetPill.add(lblAmount);
+		
+		amount = new JTextField();
+		amount.setText(" ");
+		amount.setColumns(10);
+		amount.setBounds(214, 220, 176, 30);
+		PayInternetPill.add(amount);
+		
+		JButton btnPay = new JButton("PAY");
+		btnPay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//autofill test = new autofill();
+				Paying pay = new Paying();
+				if(phonenumber.getText().length()>=7 &&
+						amount.getText().length() >=2 &&
+						 isnumber(amount.getText().toString())  &&
+						isnumber(phonenumber.getText().toString())) {
+					pay.settinginfo(city.getSelectedItem().toString(),phonenumber.getText().toString(),
+							amount.getText().toString());
+					try {
+						pay.pay();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					JOptionPane.showMessageDialog(null, pay.getresult());
+					 
+					
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null,"WRONG DATA......" );
+                    
+				}
+				
+				phonenumber.setText("");
+				amount.setText("");
+			}
+		});
+		btnPay.setBounds(123, 310, 117, 25);
+		PayInternetPill.add(btnPay);
+		
+		JSeparator separator_9 = new JSeparator();
+		separator_9.setBounds(-99, 44, 800, 14);
+		PayInternetPill.add(separator_9);
+		
+		JPanel AllMyCards = new JPanel();
+		layeredPane.add(AllMyCards, "name_1097486515549");
+		AllMyCards.setLayout(null);
+		
+		JLabel lblMyCards = new JLabel("MY CARDS");
+		lblMyCards.setBounds(220, 12, 219, 30);
+		lblMyCards.setFont(new Font("Dialog", Font.BOLD, 20));
+		AllMyCards.add(lblMyCards);
+		
+		JLayeredPane layeredPane_1 = new JLayeredPane();
+		layeredPane_1.setBounds(12, 51, 617, 59);
+		AllMyCards.add(layeredPane_1);
+		
+		JLabel lblFrom = new JLabel("FROM :");
+		lblFrom.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblFrom.setBounds(12, 12, 104, 35);
+		layeredPane_1.add(lblFrom);
+		
+		
+		JLabel lblTo = new JLabel("TO:");
+		lblTo.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblTo.setBounds(253, 12, 104, 35);
+		layeredPane_1.add(lblTo);
+		
+		JButton btnSubmit_1 = new JButton("SUBMIT");
+		
+		btnSubmit_1.setBounds(475, 17, 117, 25);
+		layeredPane_1.add(btnSubmit_1);
+		Date date = new Date();
+
+		JDateChooser frommydate = new JDateChooser();
+		frommydate.setBounds(89, 12, 146, 35);
+		frommydate.setDateFormatString("yyyy-MM-dd");
+		frommydate.setDate(date);
+		layeredPane_1.add(frommydate);
+		
+		JDateChooser tomydate = new JDateChooser();
+		tomydate.setBounds(301, 12, 162, 35);
+		tomydate.setDateFormatString("yyyy-MM-dd");
+		tomydate.setDate(date);
+		layeredPane_1.add(tomydate);
+		btnSubmit_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				java.sql.Date fromdate = new java.sql.Date(frommydate.getDate().getTime());
+				java.sql.Date todate = new java.sql.Date(tomydate.getDate().getTime());
+				mymodel = (DefaultTableModel) mytable.getModel();
+				int rowCount = mymodel.getRowCount();
+				//Remove rows one by one from the end of the table
+				for (int i = rowCount - 1; i >= 0; i--) {
+				    mymodel.removeRow(i);
+				}
+				DBconnection db = new DBconnection();
+				list=db.getcardswithdate(0, fromdate.toString(), todate.toString());
+				int i=0;
+      		   for (String[] strArr : list) {
+      			   
+      				mymodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[4]});
+        i++;
+      		//System.out.println(Arrays.toString(strArr));
+      	} 
+
+			}
+		});
+		JLayeredPane layeredPane_2 = new JLayeredPane();
+		layeredPane_2.setBounds(12, 122, 617, 68);
+		AllMyCards.add(layeredPane_2);
+		layeredPane_2.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("CARD TYPE:");
+		lblNewLabel.setBounds(12, 12, 99, 15);
+		layeredPane_2.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("QUANTITY:");
+		lblNewLabel_1.setBounds(12, 41, 80, 15);
+		layeredPane_2.add(lblNewLabel_1);
+		
+		JLabel label_1 = new JLabel("5");
+		label_1.setBounds(109, 12, 70, 15);
+		layeredPane_2.add(label_1);
+		
+		JLabel label_2 = new JLabel("10");
+		label_2.setBounds(145, 12, 70, 15);
+		layeredPane_2.add(label_2);
+		
+		JLabel label_3 = new JLabel("15");
+		label_3.setBounds(191, 12, 70, 15);
+		layeredPane_2.add(label_3);
+		
+		JLabel label_4 = new JLabel("25");
+		label_4.setBounds(227, 12, 70, 15);
+		layeredPane_2.add(label_4);
+		
+		JLabel label_5 = new JLabel("30");
+		label_5.setBounds(273, 12, 70, 15);
+		layeredPane_2.add(label_5);
+		
+		JLabel label_6 = new JLabel("40");
+		label_6.setBounds(309, 12, 70, 15);
+		layeredPane_2.add(label_6);
+		
+		JLabel label_7 = new JLabel("50");
+		label_7.setBounds(355, 12, 70, 15);
+		layeredPane_2.add(label_7);
+		
+		JLabel label_8 = new JLabel("60");
+		label_8.setBounds(391, 12, 70, 15);
+		layeredPane_2.add(label_8);
+		
+		JLabel label_9 = new JLabel("75");
+		label_9.setBounds(437, 12, 70, 15);
+		layeredPane_2.add(label_9);
+		
+		JLabel label_10 = new JLabel("100");
+		label_10.setBounds(483, 12, 70, 15);
+		layeredPane_2.add(label_10);
+		
+		JLabel label_11 = new JLabel("150");
+		label_11.setBounds(535, 12, 70, 15);
+		layeredPane_2.add(label_11);
+		DBconnection db= new DBconnection();
+		
+		 mycount5= Integer.toString(db.getcount("5", "0"));
+		 mycount10= Integer.toString(db.getcount("10", "0"));
+		 mycount15= Integer.toString(db.getcount("15", "0"));
+		 mycount25= Integer.toString(db.getcount("25", "0"));
+		 mycount30= Integer.toString(db.getcount("30", "0"));
+		 mycount40= Integer.toString(db.getcount("40", "0"));
+		 mycount50= Integer.toString(db.getcount("50", "0"));
+		 mycount60= Integer.toString(db.getcount("60", "0"));
+		 mycount75= Integer.toString(db.getcount("75", "0"));
+		 mycount100= Integer.toString(db.getcount("100", "0"));
+		 mycount150= Integer.toString(db.getcount("150", "0"));
+		 mybalance=Integer.toString(db.gettotalbalance());
+		JLabel label_12 = new JLabel(mycount5);
+		label_12.setBounds(104, 41, 70, 15);
+		layeredPane_2.add(label_12);
+		
+		JLabel label_13 = new JLabel(mycount10);
+		label_13.setBounds(145, 41, 70, 15);
+		layeredPane_2.add(label_13);
+		
+		JLabel lblNewLabel_2 = new JLabel (mycount15);
+		lblNewLabel_2.setBounds(191, 41, 70, 15);
+		layeredPane_2.add(lblNewLabel_2);
+		
+		JLabel label_14 = new JLabel(mycount25);
+		label_14.setBounds(227, 41, 70, 15);
+		layeredPane_2.add(label_14);
+		
+		JLabel label_15 = new JLabel(mycount30);
+		label_15.setBounds(273, 41, 70, 15);
+		layeredPane_2.add(label_15);
+		
+		JLabel label_16 = new JLabel(mycount40);
+		label_16.setBounds(309, 41, 70, 15);
+		layeredPane_2.add(label_16);
+		
+		JLabel label_17 = new JLabel(mycount50);
+		label_17.setBounds(355, 41, 70, 15);
+		layeredPane_2.add(label_17);
+		
+		JLabel label_18 = new JLabel(mycount60);
+		label_18.setBounds(391, 41, 70, 15);
+		layeredPane_2.add(label_18);
+		
+		JLabel label_19 = new JLabel(mycount75);
+		label_19.setBounds(437, 41, 70, 15);
+		layeredPane_2.add(label_19);
+		
+		JLabel label_20 = new JLabel(mycount100);
+		label_20.setBounds(483, 41, 70, 15);
+		layeredPane_2.add(label_20);
+		
+		JLabel label_21 = new JLabel(mycount150);
+		label_21.setBounds(535, 41, 70, 15);
+		layeredPane_2.add(label_21);
+		
+		JLabel lblTotalBalance = new JLabel("TOTAL BALANCE :");
+		lblTotalBalance.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblTotalBalance.setBounds(0, 455, 254, 45);
+		AllMyCards.add(lblTotalBalance);
+		
+		JLabel mybalancelabel = new JLabel(mybalance);
+		mybalancelabel.setFont(new Font("Dialog", Font.BOLD, 20));
+		mybalancelabel.setBounds(220, 465, 146, 24);
+		AllMyCards.add(mybalancelabel);
+		
+		JSeparator separator_3 = new JSeparator();
+		separator_3.setBounds(-75, 104, 800, 14);
+		AllMyCards.add(separator_3);
+		
+		JSeparator separator_4 = new JSeparator();
+		separator_4.setBounds(-86, 190, 800, 14);
+		AllMyCards.add(separator_4);
+		
+		JSeparator separator_11 = new JSeparator();
+		separator_11.setBounds(-123, 37, 800, 14);
+		AllMyCards.add(separator_11);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(12, 201, 617, 251);
+		AllMyCards.add(scrollPane);
+		
+		
+	
+		
+	
+		mytable = new JTable(new DefaultTableModel(new Object[]{"Type", "Card Num","Card Ser","Creation Date"}, 0));
+		mytable.setEnabled(false);
+		mytable.setFillsViewportHeight(true);
+		
+		mytable.setShowGrid(true);
+		mytable.setBounds(12, 203, 617, 250);
+		 mymodel = (DefaultTableModel) mytable.getModel();
+		//model.addRow(new Object[]{"5", "1234567812345678", "2355346436","2020-12-30"});
+	
+  
+	     mytable.setRowSelectionAllowed(true);
+
+      //  mytable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		mytable.setRowHeight(25);
+		scrollPane.setViewportView(mytable);
+
+		//AllMyCards.add(mytable); 
+	
+	
+		
+		
+		
+		JPanel UsedCards = new JPanel();
+		layeredPane.add(UsedCards, "name_1100513155080");
+		UsedCards.setLayout(null);
+		
+		JLabel lblUsedCards_1 = new JLabel("USED CARDS");
+		lblUsedCards_1.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblUsedCards_1.setBounds(232, 12, 219, 30);
+		UsedCards.add(lblUsedCards_1);
+		
+		JLayeredPane layeredPane_3 = new JLayeredPane();
+		layeredPane_3.setBounds(24, 51, 617, 59);
+		UsedCards.add(layeredPane_3);
+		
+		JLabel label_23 = new JLabel("FROM :");
+		label_23.setFont(new Font("Dialog", Font.BOLD, 15));
+		label_23.setBounds(12, 12, 104, 35);
+		layeredPane_3.add(label_23);
+		
+		JLabel label_24 = new JLabel("TO:");
+		label_24.setFont(new Font("Dialog", Font.BOLD, 15));
+		label_24.setBounds(253, 12, 104, 35);
+		layeredPane_3.add(label_24);
+		
+		JButton button = new JButton("SUBMIT");
+		
+		button.setBounds(475, 17, 117, 25);
+		layeredPane_3.add(button);
+		
+		JDateChooser fromusedate = new JDateChooser();
+		fromusedate.setBounds(83, 12, 152, 35);
+		fromusedate.setDateFormatString("yyyy-MM-dd");
+		fromusedate.setDate(date);
+		layeredPane_3.add(fromusedate);
+		
+		JDateChooser tousedate = new JDateChooser();
+		tousedate.setBounds(296, 12, 152, 35);
+		tousedate.setDateFormatString("yyyy-MM-dd");
+		tousedate.setDate(date);
+		layeredPane_3.add(tousedate);
+		
+		
+		JLayeredPane layeredPane_4 = new JLayeredPane();
+		layeredPane_4.setLayout(null);
+		layeredPane_4.setBounds(24, 122, 617, 68);
+		UsedCards.add(layeredPane_4);
+		
+		JLabel label_25 = new JLabel("CARD TYPE:");
+		label_25.setBounds(12, 12, 99, 15);
+		layeredPane_4.add(label_25);
+		
+		JLabel label_26 = new JLabel("QUANTITY:");
+		label_26.setBounds(12, 41, 80, 15);
+		layeredPane_4.add(label_26);
+		
+		JLabel label_27 = new JLabel("5");
+		label_27.setBounds(109, 12, 70, 15);
+		layeredPane_4.add(label_27);
+		
+		JLabel label_28 = new JLabel("10");
+		label_28.setBounds(145, 12, 70, 15);
+		layeredPane_4.add(label_28);
+		
+		JLabel label_29 = new JLabel("15");
+		label_29.setBounds(191, 12, 70, 15);
+		layeredPane_4.add(label_29);
+		
+		JLabel label_30 = new JLabel("25");
+		label_30.setBounds(227, 12, 70, 15);
+		layeredPane_4.add(label_30);
+		
+		JLabel label_31 = new JLabel("30");
+		label_31.setBounds(273, 12, 70, 15);
+		layeredPane_4.add(label_31);
+		
+		JLabel label_32 = new JLabel("40");
+		label_32.setBounds(309, 12, 70, 15);
+		layeredPane_4.add(label_32);
+		
+		JLabel label_33 = new JLabel("50");
+		label_33.setBounds(355, 12, 70, 15);
+		layeredPane_4.add(label_33);
+		
+		JLabel label_34 = new JLabel("60");
+		label_34.setBounds(391, 12, 70, 15);
+		layeredPane_4.add(label_34);
+		
+		JLabel label_35 = new JLabel("75");
+		label_35.setBounds(437, 12, 70, 15);
+		layeredPane_4.add(label_35);
+		
+		JLabel label_36 = new JLabel("100");
+		label_36.setBounds(483, 12, 70, 15);
+		layeredPane_4.add(label_36);
+		
+		JLabel label_37 = new JLabel("150");
+		label_37.setBounds(535, 12, 70, 15);
+		layeredPane_4.add(label_37);
+		
+		 usecount5= Integer.toString(db.getcount("5", "1"));
+		 usecount10= Integer.toString(db.getcount("10", "1"));
+		 usecount15= Integer.toString(db.getcount("15", "1"));
+		 usecount25= Integer.toString(db.getcount("25", "1"));
+		 usecount30= Integer.toString(db.getcount("30", "1"));
+		 usecount40= Integer.toString(db.getcount("40", "1"));
+		 usecount50= Integer.toString(db.getcount("50", "1"));
+		 usecount60= Integer.toString(db.getcount("60", "1"));
+		 usecount75= Integer.toString(db.getcount("75", "1"));
+		 usecount100= Integer.toString(db.getcount("100", "1"));
+		 usecount150= Integer.toString(db.getcount("150", "1"));
+		 usebalance=Integer.toString(db.getusedbalance());
+		 
+		JLabel label_38 = new JLabel(usecount5);
+		label_38.setBounds(104, 41, 70, 15);
+		layeredPane_4.add(label_38);
+		
+		JLabel label_39 = new JLabel(usecount10);
+		label_39.setBounds(145, 41, 70, 15);
+		layeredPane_4.add(label_39);
+		
+		JLabel label_40 = new JLabel(usecount15);
+		label_40.setBounds(191, 41, 70, 15);
+		layeredPane_4.add(label_40);
+		
+		JLabel label_41 = new JLabel(usecount25);
+		label_41.setBounds(227, 41, 70, 15);
+		layeredPane_4.add(label_41);
+		
+		JLabel label_42 = new JLabel(usecount30);
+		label_42.setBounds(273, 41, 70, 15);
+		layeredPane_4.add(label_42);
+		
+		JLabel label_43 = new JLabel(usecount40);
+		label_43.setBounds(309, 41, 70, 15);
+		layeredPane_4.add(label_43);
+		
+		JLabel label_44 = new JLabel(usecount50);
+		label_44.setBounds(355, 41, 70, 15);
+		layeredPane_4.add(label_44);
+		
+		JLabel label_45 = new JLabel(usecount60);
+		label_45.setBounds(391, 41, 70, 15);
+		layeredPane_4.add(label_45);
+		
+		JLabel label_46 = new JLabel(usecount75);
+		label_46.setBounds(437, 41, 70, 15);
+		layeredPane_4.add(label_46);
+		
+		JLabel label_47 = new JLabel(usecount100);
+		label_47.setBounds(483, 41, 70, 15);
+		layeredPane_4.add(label_47);
+		
+		JLabel label_48 = new JLabel(usecount150);
+		label_48.setBounds(535, 41, 70, 15);
+		layeredPane_4.add(label_48);
+		
+		JLabel label_49 = new JLabel(usebalance);
+		label_49.setFont(new Font("Dialog", Font.BOLD, 20));
+		label_49.setBounds(232, 455, 146, 45);
+		UsedCards.add(label_49);
+		
+		JSeparator separator_2 = new JSeparator();
+		separator_2.setBounds(0, 0, 1, 2);
+		UsedCards.add(separator_2);
+		
+		JLabel label_50 = new JLabel("TOTAL BALANCE :");
+		label_50.setFont(new Font("Dialog", Font.BOLD, 20));
+		label_50.setBounds(12, 455, 254, 45);
+		UsedCards.add(label_50);
+		
+		JSeparator separator_5 = new JSeparator();
+		separator_5.setBounds(-57, 107, 800, 14);
+		UsedCards.add(separator_5);
+		
+		JSeparator separator_6 = new JSeparator();
+		separator_6.setBounds(-126, 186, 800, 14);
+		UsedCards.add(separator_6);
+		
+		JSeparator separator_12 = new JSeparator();
+		separator_12.setBounds(-126, 39, 800, 14);
+		UsedCards.add(separator_12);
+
+		
+		JScrollPane usescrollPane = new JScrollPane();
+		usescrollPane.setBounds(12, 201, 617, 251);
+		UsedCards.add(usescrollPane);
+		
+
+		 usetable = new JTable(new DefaultTableModel(new Object[]{"Type", "Card Num","Card Ser","Phone","Used Date"}, 0));
+		usetable.setEnabled(false);
+		usetable.setFillsViewportHeight(true);
+		TableColumnModel columnModel = usetable.getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(20);
+		usetable.setShowGrid(true);
+		usetable.setBounds(12, 203, 617, 250);
+		 usemodel = (DefaultTableModel) usetable.getModel();
+		//model.addRow(new Object[]{"5", "1234567812345678", "2355346436","2020-12-30"});
+	
+	     usetable.setRowSelectionAllowed(true);
+
+    //  mytable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		usetable.setRowHeight(25);
+	//	scrollPane.setViewportView(usetable);	
+		usescrollPane.setViewportView(usetable);
+		
+button.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				java.sql.Date fromdate = new java.sql.Date(fromusedate.getDate().getTime());
+				java.sql.Date todate = new java.sql.Date(tousedate.getDate().getTime());
+				 usecount5= Integer.toString(db.getcountbydate("5", 1, fromdate.toString(), todate.toString()));
+				 usecount10= Integer.toString(db.getcountbydate("10", 1, fromdate.toString(), todate.toString()));
+				 usecount15= Integer.toString(db.getcountbydate("15", 1, fromdate.toString(), todate.toString()));
+				 usecount25= Integer.toString(db.getcountbydate("25", 1, fromdate.toString(), todate.toString()));
+				 usecount30= Integer.toString(db.getcountbydate("30", 1, fromdate.toString(), todate.toString()));
+				 usecount40= Integer.toString(db.getcountbydate("40", 1, fromdate.toString(), todate.toString()));
+				 usecount50= Integer.toString(db.getcountbydate("50", 1, fromdate.toString(), todate.toString()));
+				 usecount60= Integer.toString(db.getcountbydate("60", 1, fromdate.toString(), todate.toString()));
+				 usecount75= Integer.toString(db.getcountbydate("75", 1, fromdate.toString(), todate.toString()));
+				 usecount100= Integer.toString(db.getcountbydate("100", 1, fromdate.toString(), todate.toString()));
+				 usecount150= Integer.toString(db.getcountbydate("150", 1, fromdate.toString(), todate.toString()));
+				 usebalance=Integer.toString(db.getusedbalancebydate(fromdate.toString(), todate.toString()));
+				 label_38.setText(usecount5);
+				 label_39.setText(usecount10);
+				 label_40.setText(usecount15);
+				 label_41.setText(usecount25);
+				 label_42.setText(usecount30);
+				 
+				 label_43.setText(usecount40);
+				 label_44.setText(usecount50);
+				 label_45.setText(usecount60);
+				 label_46.setText(usecount75);
+				 label_47.setText(usecount100);
+				 label_48.setText(usecount150);
+				 label_49.setText(usebalance);
+				usemodel = (DefaultTableModel) usetable.getModel();
+				int rowCount = usemodel.getRowCount();
+				//Remove rows one by one from the end of the table
+				for (int i = rowCount - 1; i >= 0; i--) {
+				    usemodel.removeRow(i);
+				}
+				DBconnection db = new DBconnection();
+				list=db.getcardswithdate(1, fromdate.toString(), todate.toString());
+				int i=0;
+      		   for (String[] strArr : list) {
+      			    
+      				usemodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[6],list.get(i)[5]});
+        i++;
+      	//	System.out.println(Arrays.toString(strArr));
+      	}  
+
+			}
+			
+		});
+	
+		
+
+		
+		
+		
+		
+		
+		JPanel CorrupttedCards = new JPanel();
+		layeredPane.add(CorrupttedCards, "name_1102560482070");
+		CorrupttedCards.setLayout(null);
+		
+		JLabel lblCorrupttedCards_1 = new JLabel("CORRUPTTED CARDS");
+		lblCorrupttedCards_1.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblCorrupttedCards_1.setBounds(207, 0, 283, 30);
+		CorrupttedCards.add(lblCorrupttedCards_1);
+		
+		JLayeredPane layeredPane_5 = new JLayeredPane();
+		layeredPane_5.setBounds(24, 39, 617, 59);
+		CorrupttedCards.add(layeredPane_5);
+		
+		JLabel label_51 = new JLabel("FROM :");
+		label_51.setFont(new Font("Dialog", Font.BOLD, 15));
+		label_51.setBounds(12, 12, 104, 35);
+		layeredPane_5.add(label_51);
+		
+		JLabel label_52 = new JLabel("TO:");
+		label_52.setFont(new Font("Dialog", Font.BOLD, 15));
+		label_52.setBounds(253, 12, 104, 35);
+		layeredPane_5.add(label_52);
+		
+		JButton button_1 = new JButton("SUBMIT");
+		
+		button_1.setBounds(475, 17, 117, 25);
+		layeredPane_5.add(button_1);
+		
+		JDateChooser fromcorrdate = new JDateChooser();
+		fromcorrdate.setBounds(74, 12, 161, 35);
+		fromcorrdate.setDateFormatString("yyyy-MM-dd");
+		fromcorrdate.setDate(date);
+		layeredPane_5.add(fromcorrdate);
+		
+		JDateChooser tocorrdate = new JDateChooser();
+		tocorrdate.setBounds(294, 12, 161, 35);
+		tocorrdate.setDateFormatString("yyyy-MM-dd");
+		tocorrdate.setDate(date);
+		layeredPane_5.add(tocorrdate);
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				java.sql.Date fromdate = new java.sql.Date(fromcorrdate.getDate().getTime());
+				java.sql.Date todate = new java.sql.Date(tocorrdate.getDate().getTime());
+				corrmodel = (DefaultTableModel) corrtable.getModel();
+				int rowCount = corrmodel.getRowCount();
+				//Remove rows one by one from the end of the table
+				for (int i = rowCount - 1; i >= 0; i--) {
+				    corrmodel.removeRow(i);
+				}
+				DBconnection db = new DBconnection();
+				list=db.getcardswithdate(1, fromdate.toString(), todate.toString());
+				int i=0;
+      		   for (String[] strArr : list) {
+      			   
+      				corrmodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[4]});
+        i++;
+      		//System.out.println(Arrays.toString(strArr));
+      	}
+				 label_49.setText(usebalance);
+
+			}
+		});
+		JLayeredPane layeredPane_6 = new JLayeredPane();
+		layeredPane_6.setLayout(null);
+		layeredPane_6.setBounds(24, 110, 617, 68);
+		CorrupttedCards.add(layeredPane_6);
+		
+		JLabel label_53 = new JLabel("CARD TYPE:");
+		label_53.setBounds(12, 12, 99, 15);
+		layeredPane_6.add(label_53);
+		
+		JLabel label_54 = new JLabel("QUANTITY:");
+		label_54.setBounds(12, 41, 80, 15);
+		layeredPane_6.add(label_54);
+		
+		JLabel label_55 = new JLabel("5");
+		label_55.setBounds(109, 12, 70, 15);
+		layeredPane_6.add(label_55);
+		
+		JLabel label_56 = new JLabel("10");
+		label_56.setBounds(145, 12, 70, 15);
+		layeredPane_6.add(label_56);
+		
+		JLabel label_57 = new JLabel("15");
+		label_57.setBounds(191, 12, 70, 15);
+		layeredPane_6.add(label_57);
+		
+		JLabel label_58 = new JLabel("25");
+		label_58.setBounds(227, 12, 70, 15);
+		layeredPane_6.add(label_58);
+		
+		JLabel label_59 = new JLabel("30");
+		label_59.setBounds(273, 12, 70, 15);
+		layeredPane_6.add(label_59);
+		
+		JLabel label_60 = new JLabel("40");
+		label_60.setBounds(309, 12, 70, 15);
+		layeredPane_6.add(label_60);
+		
+		JLabel label_61 = new JLabel("50");
+		label_61.setBounds(355, 12, 70, 15);
+		layeredPane_6.add(label_61);
+		
+		JLabel label_62 = new JLabel("60");
+		label_62.setBounds(391, 12, 70, 15);
+		layeredPane_6.add(label_62);
+		
+		JLabel label_63 = new JLabel("75");
+		label_63.setBounds(437, 12, 70, 15);
+		layeredPane_6.add(label_63);
+		
+		JLabel label_64 = new JLabel("100");
+		label_64.setBounds(483, 12, 70, 15);
+		layeredPane_6.add(label_64);
+		
+		JLabel label_65 = new JLabel("150");
+		label_65.setBounds(535, 12, 70, 15);
+		layeredPane_6.add(label_65);
+		 corrcount5= Integer.toString(db.getcount("5", "2"));
+		 corrcount10= Integer.toString(db.getcount("10", "2"));
+		 corrcount15= Integer.toString(db.getcount("15", "2"));
+		 corrcount25= Integer.toString(db.getcount("25", "2"));
+		 corrcount30= Integer.toString(db.getcount("30", "2"));
+		 corrcount40= Integer.toString(db.getcount("40", "2"));
+		 corrcount50= Integer.toString(db.getcount("50", "2"));
+		 corrcount60= Integer.toString(db.getcount("60", "2"));
+		 corrcount75= Integer.toString(db.getcount("75", "2"));
+		 corrcount100= Integer.toString(db.getcount("100", "2"));
+		 corrcount150= Integer.toString(db.getcount("150", "2"));
+		 corrbalance=Integer.toString(db.getcorrupttedbalance());
+		 
+		JLabel label_66 = new JLabel(corrcount5);
+		label_66.setBounds(104, 41, 70, 15);
+		layeredPane_6.add(label_66);
+		
+		JLabel label_67 = new JLabel(corrcount10);
+		label_67.setBounds(145, 41, 70, 15);
+		layeredPane_6.add(label_67);
+		
+		JLabel label_68 = new JLabel(corrcount15);
+		label_68.setBounds(191, 41, 70, 15);
+		layeredPane_6.add(label_68);
+		
+		JLabel label_69 = new JLabel(corrcount25);
+		label_69.setBounds(227, 41, 70, 15);
+		layeredPane_6.add(label_69);
+		
+		JLabel label_70 = new JLabel(corrcount30);
+		label_70.setBounds(273, 41, 70, 15);
+		layeredPane_6.add(label_70);
+		
+		JLabel label_71 = new JLabel(corrcount40);
+		label_71.setBounds(309, 41, 70, 15);
+		layeredPane_6.add(label_71);
+		
+		JLabel label_72 = new JLabel(corrcount50);
+		label_72.setBounds(355, 41, 70, 15);
+		layeredPane_6.add(label_72);
+		
+		JLabel label_73 = new JLabel(corrcount60);
+		label_73.setBounds(391, 41, 70, 15);
+		layeredPane_6.add(label_73);
+		
+		JLabel label_74 = new JLabel(corrcount75);
+		label_74.setBounds(437, 41, 70, 15);
+		layeredPane_6.add(label_74);
+		
+		JLabel label_75 = new JLabel(corrcount100);
+		label_75.setBounds(483, 41, 70, 15);
+		layeredPane_6.add(label_75);
+		
+		JLabel label_76 = new JLabel(corrcount150);
+		label_76.setBounds(535, 41, 70, 15);
+		layeredPane_6.add(label_76);
+		
+		JLabel label_77 = new JLabel(corrbalance);
+		label_77.setFont(new Font("Dialog", Font.BOLD, 20));
+		label_77.setBounds(232, 443, 146, 45);
+		CorrupttedCards.add(label_77);
+		
+		JLabel label_78 = new JLabel("TOTAL BALANCE :");
+		label_78.setFont(new Font("Dialog", Font.BOLD, 20));
+		label_78.setBounds(12, 443, 254, 45);
+		CorrupttedCards.add(label_78);
+		
+		JSeparator separator_7 = new JSeparator();
+		separator_7.setBounds(-72, 93, 800, 14);
+		CorrupttedCards.add(separator_7);
+		
+		JSeparator separator_8 = new JSeparator();
+		separator_8.setBounds(-123, 174, 800, 14);
+		CorrupttedCards.add(separator_8);
+		
+		JSeparator separator_13 = new JSeparator();
+		separator_13.setBounds(-141, 28, 800, 14);
+		CorrupttedCards.add(separator_13);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(24, 190, 605, 255);
+		CorrupttedCards.add(scrollPane_1);
+		
+
+		 corrtable = new JTable(new DefaultTableModel(new Object[]{"Type", "Card Num","Card Ser","Created Date"}, 0));
+		corrtable.setEnabled(true);
+		corrtable.setFillsViewportHeight(true);
+		
+		corrtable.setShowGrid(true);
+		corrtable.setBounds(12, 203, 617, 250);
+		 corrmodel = (DefaultTableModel) corrtable.getModel();
+		 
+		 corrtable.setFocusable(false);
+	      corrtable.addMouseListener(new MouseAdapter() {
+	         public void mouseClicked(MouseEvent me) {
+	            if (me.getClickCount() == 1) {     // to detect doble click events
+	               JTable target = (JTable)me.getSource();
+	               int row = target.getSelectedRow(); // select a row
+	            //   int a=JOptionPane.showConfirmDialog(frame,"Are you sure you want to delete this card?" );
+	            int a=   JOptionPane.showConfirmDialog(frame,
+	                       "Are you sure you want to delete this card", "Customized Dialog",
+	                       JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+	               	DBconnection  db = new DBconnection();
+              
+	            if (a== 0) {
+                    	db.deletecard(corrtable.getValueAt(row, 1).toString());
+                		int rowCount = corrmodel.getRowCount();
+    					//Remove rows one by one from the end of the table
+    					for (int i = rowCount - 1; i >= 0; i--) {
+    					    corrmodel.removeRow(i);
+    					}
+                 	int i=0;
+    			    list=db.getcardstotable(2);
+
+       		   for (String[] strArr : list) {
+       			   
+       				corrmodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[4]});
+         i++;
+       		//System.out.println(Arrays.toString(strArr));
+       	} 
+				 corrbalance=Integer.toString(db.getcorrupttedbalance());
+				 label_77.setText(corrbalance);
+                    	JOptionPane.showMessageDialog(null, "Card deleted successfully");
+                    }
+	            //  JOptionPane.showMessageDialog(null, corrtable.getValueAt(row, 1).toString()); // get the value of a row and column.
+	            }
+	         }
+	      });
+		//model.addRow(new Object[]{"5", "1234567812345678", "2355346436","2020-12-30"});
+	
+		 corrtable.setRowSelectionAllowed(true);
+
+   //  mytable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		corrtable.setRowHeight(25);
+	//	scrollPane.setViewportView(usetable);	
+		
+	
+		scrollPane_1.setViewportView(corrtable);
+		
+		JButton btnTryThemAgain = new JButton("TRY THEM AGAIN !");
+		btnTryThemAgain.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DBconnection db = new DBconnection();
+				int i=0;
+				   for (String[] strArr : list) {
+	     			   db.updatestatus(list.get(i)[1], 0);
+	     			   i++;
+	     		//System.out.println(Arrays.toString(strArr));
+	     	} 
+			    list=db.getcardstotable(2);
+   				int rowCount = corrmodel.getRowCount();
+   				//Remove rows one by one from the end of the table
+   				for ( i = rowCount - 1; i >= 0; i--) {
+   				    corrmodel.removeRow(i);
+   				}
+   			 corrbalance=Integer.toString(db.getcorrupttedbalance());
+			 label_77.setText(corrbalance);
+				JOptionPane.showMessageDialog(null,"Done...." );
+
+			}
+		});
+		btnTryThemAgain.setBounds(423, 457, 190, 31);
+		CorrupttedCards.add(btnTryThemAgain);
+		
+		JPanel Inquiry = new JPanel();
+		layeredPane.add(Inquiry, "name_1104346644073");
+		Inquiry.setLayout(null);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(37, 10, 581, 57);
+		Inquiry.add(panel_1);
+		panel_1.setLayout(null);
+		
+		JLabel lblInquiry_1 = new JLabel("INQUIRY");
+		lblInquiry_1.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblInquiry_1.setBounds(237, 12, 118, 33);
+		panel_1.add(lblInquiry_1);
+		
+		JSeparator separator_15 = new JSeparator();
+		separator_15.setBounds(-91, 57, 810, 14);
+		panel_1.add(separator_15);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBounds(37, 78, 581, 65);
+		Inquiry.add(panel_2);
+		panel_2.setLayout(null);
+		
+		JLabel lblPhoneNumber_1 = new JLabel("Phone Number :");
+		lblPhoneNumber_1.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblPhoneNumber_1.setBounds(0, 12, 161, 49);
+		panel_2.add(lblPhoneNumber_1);
+		
+		textField = new JTextField();
+		textField.setBounds(158, 25, 122, 25);
+		panel_2.add(textField);
+		textField.setColumns(10);
+		
+		JButton btnSearch = new JButton("SEARCH");
+	
+		btnSearch.setBounds(292, 25, 107, 25);
+		panel_2.add(btnSearch);
+		
+		JButton btnSearchToday = new JButton("SEARCH TODAY");
+	
+		btnSearchToday.setBounds(411, 25, 158, 25);
+		panel_2.add(btnSearchToday);
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBounds(37, 443, 592, 57);
+		Inquiry.add(panel_3);
+		panel_3.setLayout(null);
+		
+		JLabel lblTotalAmount = new JLabel("TOTAL AMOUNT:");
+		lblTotalAmount.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblTotalAmount.setBounds(12, 12, 178, 33);
+		panel_3.add(lblTotalAmount);
+		
+		JLabel lblNewLabel_4 = new JLabel("qq");
+		lblNewLabel_4.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblNewLabel_4.setBounds(175, 12, 102, 33);
+		panel_3.add(lblNewLabel_4);
+		
+		JLabel lblLe = new JLabel("L.E");
+		lblLe.setFont(new Font("Dialog", Font.BOLD, 16));
+		lblLe.setBounds(292, 12, 70, 33);
+		panel_3.add(lblLe);
+		
+		JSeparator separator_14 = new JSeparator();
+		separator_14.setBounds(0, 0, 1, 2);
+		Inquiry.add(separator_14);
+		
+		JSeparator separator_16 = new JSeparator();
+		separator_16.setBounds(-58, 145, 800, 14);
+		Inquiry.add(separator_16);
+		
+		JSeparator separator_17 = new JSeparator();
+		separator_17.setBounds(-106, 68, 800, 14);
+		Inquiry.add(separator_17);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(37, 156, 581, 275);
+		Inquiry.add(scrollPane_2);
+		
+
+
+		 numtable = new JTable(new DefaultTableModel(new Object[]{"Type", "Card Num","Card Ser","Created Date"}, 0));
+		numtable.setEnabled(false);
+		numtable.setFillsViewportHeight(true);
+		
+		numtable.setShowGrid(true);
+		numtable.setBounds(12, 203, 617, 250);
+		 nummodel = (DefaultTableModel) numtable.getModel();
+		//model.addRow(new Object[]{"5", "1234567812345678", "2355346436","2020-12-30"});
+	
+		 numtable.setRowSelectionAllowed(true);
+
+  //  mytable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		numtable.setRowHeight(25);
+	//	scrollPane.setViewportView(usetable);	
+		
+			
+		scrollPane_2.setViewportView(numtable);
+		
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DBconnection db = new DBconnection();
+				list= db.getcardswithphonenumber(textField.getText().toString());
+				nummodel = (DefaultTableModel) numtable.getModel();
+				int rowCount = nummodel.getRowCount();
+				//Remove rows one by one from the end of the table
+				for (int i = rowCount - 1; i >= 0; i--) {
+				    nummodel.removeRow(i);
+				}
+				int i=0;
+				int count=0;
+      		   for (String[] strArr : list) {
+      			    count+= Integer.parseInt(list.get(i)[0]);
+      				nummodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[5]});
+        i++;
+      		//System.out.println(Arrays.toString(strArr));
+      	}
+      		 lblNewLabel_4.setText(Integer.toString(count));
+      		   
+			}
+		});
+		
+		
+		
+		//JButton btnSearchToday = new JButton("SEARCH TODAY");
+		btnSearchToday.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DBconnection db = new DBconnection();
+				  DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");  
+				   LocalDateTime now = LocalDateTime.now();  
+				list= db.getcardswithphonenumberanddate(textField.getText().toString(),dtf.format(now));
+				nummodel = (DefaultTableModel) numtable.getModel();
+				for (String[] strArr : list) {
+					System.out.println("hoa dah");
+        				System.out.println(Arrays.toString(strArr));
+        			} 
+        	      
+				int rowCount = nummodel.getRowCount();
+				//Remove rows one by one from the end of the table
+				for (int i = rowCount - 1; i >= 0; i--) {
+				    nummodel.removeRow(i);
+				}
+				int i=0;
+				int count=0;
+      		   for (String[] strArr : list) {
+      			    count+= Integer.parseInt(list.get(i)[0]);
+      				nummodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[5]});
+        i++;
+      		//System.out.println(Arrays.toString(strArr));
+      	}
+      		 lblNewLabel_4.setText(Integer.toString(count));
+			}
+		});
+		
+		
+		
+		JLabel lblAddNewCard = new JLabel("ADD NEW CARD");
+		lblAddNewCard.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				  CardNumber.setText("");
+				  SerialNumber.setText("");
+				switchpanel(AddNewCard);
+			}
+		});
+		lblAddNewCard.setBounds(12, 12, 120, 34);
+		frame.getContentPane().add(lblAddNewCard);
+		
+		JLabel lblPayBill = new JLabel("PAY BILL");
+		lblPayBill.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				phonenumber.setText("");
+				amount.setText("");
+				switchpanel(PayInternetPill);
+
+			}
+		});
+		lblPayBill.setBounds(136, 12, 92, 34);
+		frame.getContentPane().add(lblPayBill);
+		
+		JLabel lblAllMyCards = new JLabel("ALL MY CARDS");
+		lblAllMyCards.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				DBconnection db= new DBconnection();
+				
+				 mycount5= Integer.toString(db.getcount("5", "0"));
+				 mycount10= Integer.toString(db.getcount("10", "0"));
+				 mycount15= Integer.toString(db.getcount("15", "0"));
+				 mycount25= Integer.toString(db.getcount("25", "0"));
+				 mycount30= Integer.toString(db.getcount("30", "0"));
+				 mycount40= Integer.toString(db.getcount("40", "0"));
+				 mycount50= Integer.toString(db.getcount("50", "0"));
+				 mycount60= Integer.toString(db.getcount("60", "0"));
+				 mycount75= Integer.toString(db.getcount("75", "0"));
+				 mycount100= Integer.toString(db.getcount("100", "0"));
+				 mycount150= Integer.toString(db.getcount("150", "0"));
+				 mybalance=Integer.toString(db.gettotalbalance());
+				 label_12.setText(mycount5);
+				 label_13.setText(mycount10);
+				 lblNewLabel_2.setText(mycount15);
+				 label_14.setText(mycount25);
+				 label_15.setText(mycount30);
+				 
+				 label_16.setText(mycount40);
+				 label_17.setText(mycount50);
+				 label_18.setText(mycount60);
+				 label_19.setText(mycount75);
+				 label_20.setText(mycount100);
+				 label_21.setText(mycount150);
+				 mybalancelabel.setText(mybalance);
+					frommydate.setDate(date);
+					tomydate.setDate(date);
+
+                       list=db.getcardstotable(0);
+       				int rowCount = mymodel.getRowCount();
+       				//Remove rows one by one from the end of the table
+       				for (int i = rowCount - 1; i >= 0; i--) {
+       				    mymodel.removeRow(i);
+       				}
+                   	int i=0;
+                   	
+         		   for (String[] strArr : list) {
+         			   
+         				mymodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[4]});
+           i++;
+         		//System.out.println(Arrays.toString(strArr));
+         	} 
+				switchpanel(AllMyCards);
+				
+				
+			}
+		});
+		lblAllMyCards.setBounds(219, 12, 120, 34);
+		frame.getContentPane().add(lblAllMyCards);
+		
+		JLabel lblUsedCards = new JLabel("USED CARDS");
+		lblUsedCards.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				DBconnection db= new DBconnection();
+				
+				 usecount5= Integer.toString(db.getcount("5", "1"));
+				 usecount10= Integer.toString(db.getcount("10", "1"));
+				 usecount15= Integer.toString(db.getcount("15", "1"));
+				 usecount25= Integer.toString(db.getcount("25", "1"));
+				 usecount30= Integer.toString(db.getcount("30", "1"));
+				 usecount40= Integer.toString(db.getcount("40", "1"));
+				 usecount50= Integer.toString(db.getcount("50", "1"));
+				 usecount60= Integer.toString(db.getcount("60", "1"));
+				 usecount75= Integer.toString(db.getcount("75", "1"));
+				 usecount100= Integer.toString(db.getcount("100", "1"));
+				 usecount150= Integer.toString(db.getcount("150", "1"));
+				 usebalance=Integer.toString(db.getusedbalance());
+				 label_38.setText(usecount5);
+				 label_39.setText(usecount10);
+				 label_40.setText(usecount15);
+				 label_41.setText(usecount25);
+				 label_42.setText(usecount30);
+				 
+				 label_43.setText(usecount40);
+				 label_44.setText(usecount50);
+				 label_45.setText(usecount60);
+				 label_46.setText(usecount75);
+				 label_47.setText(usecount100);
+				 label_48.setText(usecount150);
+				 label_49.setText(usebalance);
+					fromusedate.setDate(date);
+					tousedate.setDate(date);
+				 list=db.getcardstotable(1);
+					int rowCount = usemodel.getRowCount();
+					//Remove rows one by one from the end of the table
+					for (int i = rowCount - 1; i >= 0; i--) {
+					    usemodel.removeRow(i);
+					}
+                	int i=0;
+      		   for (String[] strArr : list) {
+      			   
+      				usemodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[6],list.get(i)[5]});
+        i++;
+      		//System.out.println(Arrays.toString(strArr));
+      	} 
+				switchpanel(UsedCards);
+			}
+		});
+		lblUsedCards.setBounds(339, 12, 97, 34);
+		frame.getContentPane().add(lblUsedCards);
+		
+		JLabel lblCorrupttedCards = new JLabel("CORRUPTTED CARDS");
+		lblCorrupttedCards.addMouseListener(new MouseAdapter() {
+			@Override
+			
+			public void mouseClicked(MouseEvent e) {
+				DBconnection db= new DBconnection();
+				
+				 corrcount5= Integer.toString(db.getcount("5", "2"));
+				 corrcount10= Integer.toString(db.getcount("10", "2"));
+				 corrcount15= Integer.toString(db.getcount("15", "2"));
+				 corrcount25= Integer.toString(db.getcount("25", "2"));
+				 corrcount30= Integer.toString(db.getcount("30", "2"));
+				 corrcount40= Integer.toString(db.getcount("40", "2"));
+				 corrcount50= Integer.toString(db.getcount("50", "2"));
+				 corrcount60= Integer.toString(db.getcount("60", "2"));
+				 corrcount75= Integer.toString(db.getcount("75", "2"));
+				 corrcount100= Integer.toString(db.getcount("100", "2"));
+				 corrcount150= Integer.toString(db.getcount("150", "2"));
+				 corrbalance=Integer.toString(db.getcorrupttedbalance());
+				 
+				 label_66.setText(corrcount5);
+				 label_67.setText(corrcount10);
+				 label_68.setText(corrcount15);
+				 label_69.setText(corrcount25);
+				 label_70.setText(corrcount30);
+				 
+				 label_71.setText(corrcount40);
+				 label_72.setText(corrcount50);
+				 label_73.setText(corrcount60);
+				 label_74.setText(corrcount75);
+				 label_75.setText(corrcount100);
+				 label_76.setText(corrcount150);
+				 label_77.setText(corrbalance);
+					fromcorrdate.setDate(date);
+					tocorrdate.setDate(date);
+				 list=db.getcardstotable(2);
+					int rowCount = corrmodel.getRowCount();
+					//Remove rows one by one from the end of the table
+					for (int i = rowCount - 1; i >= 0; i--) {
+					    corrmodel.removeRow(i);
+					}
+             	int i=0;
+   		   for (String[] strArr : list) {
+   			   
+   				corrmodel.addRow(new Object[]{list.get(i)[0],list.get(i)[1], list.get(i)[2],list.get(i)[4]});
+     i++;
+   		//System.out.println(Arrays.toString(strArr));
+   	} 
+				switchpanel(CorrupttedCards);
+			}
+		});
+		lblCorrupttedCards.setBounds(448, 12, 153, 34);
+		frame.getContentPane().add(lblCorrupttedCards);
+		
+		JLabel lblInquiry = new JLabel("INQUIRY");
+		lblInquiry.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				lblNewLabel_4.setText("");
+				textField.setText("");
+				nummodel = (DefaultTableModel) numtable.getModel();
+				int rowCount = nummodel.getRowCount();
+				//Remove rows one by one from the end of the table
+				for (int i = rowCount - 1; i >= 0; i--) {
+				    nummodel.removeRow(i);
+				}
+				switchpanel(Inquiry);
+			}
+		});
+		lblInquiry.setBounds(613, 12, 87, 34);
+		frame.getContentPane().add(lblInquiry);
+	}
+}
+

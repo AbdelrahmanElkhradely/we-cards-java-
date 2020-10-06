@@ -1,0 +1,1203 @@
+package database;
+
+import java.io.FileInputStream;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
+
+public class DBconnection {
+   // JDBC driver name and database URL
+   static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+   static final String DB_URL = "jdbc:mysql://localhost:3306/CARDS";
+   String result;
+  public  ResultSet r;
+  public List<String> cardsnum;
+  
+  public  List<String> getcardsnum() {
+	   return cardsnum;
+   }
+   //  Database credentials
+   static final String USER = "root";
+   static final String PASS = "";
+   static void CreateDataBase() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     // // //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     // //  System.out.println("Creating database...");
+	      stmt = conn.createStatement();
+	      
+	      String sql = "CREATE DATABASE CARDS";
+	      stmt.executeUpdate(sql);
+	     // //  System.out.println("Database created successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  // //  System.out.println("Goodbye!");
+   }
+   static void CreateTableCards() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     // //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     // //  System.out.println("Creating table...");
+	      stmt = conn.createStatement();
+	      
+	      /*String sql = "CREATE TABLE cards " +
+	                   "(ID INTEGER not NULL, " +
+	                   " first VARCHAR(255), " + 
+	                   " last VARCHAR(255), " + 
+	                   " age INTEGER, " + 
+	                   " PRIMARY KEY ( id ))"; */
+	     String sql = " CREATE TABLE IF NOT EXISTS cards (\n"
+		    		+ " CardType VARCHAR(3) not NULL ,\n"
+	    		+ " CardNum VARCHAR(16) not NULL ,\n"
+	    		+ "CardSer VARCHAR(25) not NULL ,\n"
+	    		+ "Status INT not NULL DEFAULT '0',\n"
+	    		+ "CreateDate date not NULL DEFAULT CURRENT_TIMESTAMP ,\n"
+	    		+ "UpdateDate date not NULL DEFAULT CURRENT_TIMESTAMP ,\n"
+	    		+ "UsedBy INT not NULL DEFAULT '0' ,\n" 
+	    		+ " PRIMARY KEY (`CardNum`),\n" 
+	    		+"  UNIQUE `cardser` (`CardSer`)\n"
+	    		+");";
+	      stmt.executeUpdate(sql);
+	     // //  System.out.println("table created successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  // //  System.out.println("Goodbye!");
+   }
+   public String AddCard(String cardtype,String cardnum, String cardser) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //// //  System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = " insert into cards (CardType,CardNum,CardSer)"
+	    	        + " values (?, ?, ?)";
+	   //   stmt.executeUpdate(sql);
+	      PreparedStatement preparedStmt = conn.prepareStatement(sql);
+	      preparedStmt.setString (1, cardtype);
+	      preparedStmt.setString (2, cardnum);
+	      preparedStmt.setString (3, cardser);
+
+	      // execute the preparedstatement
+	      preparedStmt.execute();
+	      //System.out.println("data inserted successfully...");
+	      result="data inserted successfully...";
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+		   result="card number or serial number used before...";
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	   return result;
+   }
+   public String AddCardFromExcel(String excelFilePath ) {
+	   Connection conn = null;
+	   Statement stmt = null;
+      // String excelFilePath = "/home/elkhradely/eclipse-workspace/we project/src/database/trail.xlsx";
+
+       int batchSize = 20;
+       
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+          conn.setAutoCommit(false);
+
+	      //STEP 4: Execute a query
+	     //// //  System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+          
+          FileInputStream inputStream = new FileInputStream(excelFilePath);
+
+          Workbook workbook = new XSSFWorkbook(inputStream);
+
+          Sheet firstSheet = workbook.getSheetAt(0);
+          DataFormatter formatter = new DataFormatter();
+
+          Iterator<Row> rowIterator = firstSheet.iterator();
+          
+	      String sql = " insert into cards (CardType,CardNum,CardSer)"
+	    	        + " values (?, ?, ?)";
+	   //   stmt.executeUpdate(sql);
+	      PreparedStatement preparedStmt = conn.prepareStatement(sql);
+	      
+          int count = 0;
+           
+          rowIterator.next(); // skip the header row
+          while (rowIterator.hasNext()) {
+              Row nextRow = rowIterator.next();
+              Iterator<Cell> cellIterator = nextRow.cellIterator();
+
+              while (cellIterator.hasNext()) {
+                  Cell nextCell = cellIterator.next();
+
+                  int columnIndex = nextCell.getColumnIndex();
+
+                  switch (columnIndex) {
+                  case 0:
+                      String cardtype =formatter.formatCellValue(nextCell).toString();
+
+                      //String cardtype =formatter.formatCellValue( nextCell.getStringCellValue());
+                      preparedStmt.setString(1, cardtype);
+                      break;
+                  case 1:
+                	  
+                      String cardnumber =formatter.formatCellValue(nextCell).toString();
+                      if(cardnumber.length()==16) {
+                     // String cardnumber = nextCell.getStringCellValue();
+                      preparedStmt.setString(2,cardnumber );
+                      }
+                     
+                  case 2:
+                      String cardser =formatter.formatCellValue(nextCell).toString();
+
+                     // String cardser =  nextCell.getStringCellValue();
+                      preparedStmt.setString(3, cardser);
+                  }
+
+              }
+               
+              preparedStmt.addBatch();
+               
+              if (count % batchSize == 0) {
+            	  preparedStmt.executeBatch();
+              }              
+
+          }
+          /*
+	      preparedStmt.setString (1, cardtype);
+	      preparedStmt.setString (2, cardnum);
+	      preparedStmt.setString (3, cardser);
+*/
+          workbook.close();
+          
+          // execute the remaining queries
+          preparedStmt.executeBatch();
+
+          conn.commit();
+        //  conn.close();
+           
+        //  System.out.printf("Import done in %d ms\n", (end - start));
+	      // execute the preparedstatement
+	    //  preparedStmt.execute();
+	      //System.out.println("data inserted successfully...");
+	      result="Data inserted successfully...";
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+		   
+		  result="Data in the file is not valid";
+		  System.out.println(se);
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	   return result;
+   }
+   public ResultSet getallcards() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = "SELECT * " +
+                  "FROM cards WHERE Status= 0 ";;
+	       rs =  stmt.executeQuery(sql);
+	   /*   while (rs.next()) {
+             // //  System.out.println(rs.getString("CardType") + "\t" + 
+                                 rs.getString("CardNum")  + "\t" +
+                                 rs.getString("CardSer"));
+                 
+          }*/
+	 
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return rs;
+   }
+   public void getcardswithvalue(String value) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = "SELECT * " +
+                  "FROM cards WHERE Status= 0 AND CardType= ?";;
+	      // rs =  stmt.executeQuery(sql);
+                  PreparedStatement ps = null;
+                  ps = conn.prepareStatement(sql);
+                  ps.setString(1,value);
+        	     rs=  ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        	     cardsnum = new ArrayList<String>();
+                  int i=0;
+        	     while (rs.next()) {
+        	    	 cardsnum.add(rs.getString("CardNum").toString());
+      	            //// //  System.out.println(cardsnum.get(i));
+                  i++;
+   	          }
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+   }
+   public List<String[]> getcardswithdate(int status,String fromdate, String todate) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+		List<String[]> list = new ArrayList<String[]>();
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	  //    String sql;
+          PreparedStatement ps = null;
+
+	      if(status== 0) {
+	    	     ps=conn.prepareStatement( "select * "
+	    	      		+ "from cards where Status=? AND CreateDate BETWEEN '"+fromdate+"' AND '"+todate+"' ");
+                 ps.setInt(1,status);
+
+	      }
+	      else {
+	    	   ps=conn.prepareStatement( "select * "
+	    	      		+ "from cards where Status=? AND UpdateDate BETWEEN '"+fromdate+"' AND '"+todate+"' ");
+                ps.setInt(1,status);
+	      }
+	      // rs =  stmt.executeQuery(sql);
+        	     rs=  ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        	     cardsnum = new ArrayList<String>();
+
+        	     while (rs.next()) {
+        	 		String[] arr1 = { 
+        	 				rs.getString("CardType").toString(),
+        	 				rs.getString("CardNum").toString(),
+        	 				rs.getString("CardSer").toString(),
+        	 				rs.getString("Status").toString(),
+        	 				rs.getString("CreateDate").toString(),
+        	 				rs.getString("UpdateDate").toString(),
+        	 				rs.getString("UsedBy").toString()
+
+        	 		};
+
+        	    	 list.add(arr1);
+      	            //// //  System.out.println(cardsnum.get(i));
+                  
+   	          }
+        	   /*  for (String[] strArr : list) {
+        				System.out.println(Arrays.toString(strArr));
+        			} */
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return list;
+   }
+   public List<String[]> getcardswithphonenumber(String phonenumber) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+		List<String[]> list = new ArrayList<String[]>();
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	      //String sql;
+          PreparedStatement ps = null;
+
+	    
+	    	     ps=conn.prepareStatement( "select * "
+	    	      		+ "from cards where Status= 1  AND UsedBy = '"+phonenumber+"' ORDER BY UpdateDate DESC");
+
+	      
+	      // rs =  stmt.executeQuery(sql);
+        	     rs=  ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        	     cardsnum = new ArrayList<String>();
+
+        	     while (rs.next()) {
+        	 		String[] arr1 = { 
+        	 				rs.getString("CardType").toString(),
+        	 				rs.getString("CardNum").toString(),
+        	 				rs.getString("CardSer").toString(),
+        	 				rs.getString("Status").toString(),
+        	 				rs.getString("CreateDate").toString(),
+        	 				rs.getString("UpdateDate").toString(),
+        	 				rs.getString("UsedBy").toString()
+
+        	 		};
+
+        	    	 list.add(arr1);
+      	            //// //  System.out.println(cardsnum.get(i));
+                  
+   	          }
+        	    for (String[] strArr : list) {
+        				System.out.println(Arrays.toString(strArr));
+        			} 
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return list;
+   }
+
+   public List<String[]> getcardswithphonenumberanddate(String phonenumber,String date) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+		List<String[]> list = new ArrayList<String[]>();
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	      //String sql;
+          PreparedStatement ps = null;
+
+	    
+	    	     ps=conn.prepareStatement( "select * "
+	    	      		+ "from cards where Status= 1  AND UsedBy = '"+phonenumber+"' AND UpdateDate= '"+date+"' ORDER BY UpdateDate DESC");
+
+	      
+	      // rs =  stmt.executeQuery(sql);
+        	     rs=  ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        	     cardsnum = new ArrayList<String>();
+
+        	     while (rs.next()) {
+        	 		String[] arr1 = { 
+        	 				rs.getString("CardType").toString(),
+        	 				rs.getString("CardNum").toString(),
+        	 				rs.getString("CardSer").toString(),
+        	 				rs.getString("Status").toString(),
+        	 				rs.getString("CreateDate").toString(),
+        	 				rs.getString("UpdateDate").toString(),
+        	 				rs.getString("UsedBy").toString()
+
+        	 		};
+
+        	    	 list.add(arr1);
+      	            //// //  System.out.println(cardsnum.get(i));
+                  
+   	          }
+        	    for (String[] strArr : list) {
+        				System.out.println(Arrays.toString(strArr));
+        			} 
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return list;
+   }
+
+   public List<String[]> getcardstotable(int status) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+		List<String[]> list = new ArrayList<String[]>();
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	//      String sql;
+          PreparedStatement ps = null;
+if(status==0) {
+	    	     ps=conn.prepareStatement( "select * "
+	    	      		+ "from cards where Status=? ORDER BY CreateDate DESC");
+}
+else
+{
+	 ps=conn.prepareStatement( "select * "
+	      		+ "from cards where Status=? ORDER BY UpdateDate DESC");
+}
+	             ps.setInt(1, status);
+	      // rs =  stmt.executeQuery(sql);
+        	     rs=  ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        	     cardsnum = new ArrayList<String>();
+
+        	     while (rs.next()) {
+        	 		String[] arr1 = { 
+        	 				rs.getString("CardType").toString(),
+        	 				rs.getString("CardNum").toString(),
+        	 				rs.getString("CardSer").toString(),
+        	 				rs.getString("Status").toString(),
+        	 				rs.getString("CreateDate").toString(),
+        	 				rs.getString("UpdateDate").toString(),
+        	 				rs.getString("UsedBy").toString()
+
+        	 		};
+
+        	    	 list.add(arr1);
+      	            //// //  System.out.println(cardsnum.get(i));
+                  
+   	          }
+        	     for (String[] strArr : list) {
+        			//	System.out.println(Arrays.toString(strArr));
+        			} 
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return list;
+   }
+   public void updatestatus(String cardnum,int newstatus) {
+	   Connection conn = null;
+	   Statement stmt = null;
+//	   ResultSet rs=null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	     	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	      String sql = "  update cards set Status=? , UpdateDate=? where CardNum=? ";
+	      java.util.Date utilDate = new java.util.Date();
+          java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+	      
+	      // rs =  stmt.executeQuery(sql);
+                  PreparedStatement ps = null;
+                  ps = conn.prepareStatement(sql);
+                  ps.setInt(1,newstatus);
+                 ps.setDate(2, sqlDate);
+                  ps.setString(3,cardnum);
+                  ps.executeUpdate();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+   }
+
+   public void deletecard(String cardnum) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	//   ResultSet rs=null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	     	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	      String sql = "delete from cards where CardNum= ?";
+
+	   //   java.util.Date utilDate = new java.util.Date();
+       //   java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+	      
+	      // rs =  stmt.executeQuery(sql);
+                  PreparedStatement ps = null;
+                  ps = conn.prepareStatement(sql);
+                  ps.setString(1,cardnum);
+                  ps.executeUpdate();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+   }
+   public void updateusednumber(String cardnum,String usednumber) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	     	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	      String sql = "  update cards set UsedBy=?  where CardNum=? ";
+	     
+	      
+	      // rs =  stmt.executeQuery(sql);
+                  PreparedStatement ps = null;
+                  ps = conn.prepareStatement(sql);
+                  ps.setString(1,usednumber);
+                  ps.setString(2,cardnum);
+
+                  ps.executeUpdate();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+   }
+   public int gettotalbalance() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+	   int balance=0;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = "SELECT * " +
+                  "FROM cards WHERE Status= 0 ";;
+	       rs =  stmt.executeQuery(sql);
+	       
+	     while (rs.next()) {
+          balance= balance+ Integer.parseInt(rs.getString("CardType") );      
+          }
+	 
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return balance;
+   }
+   public int getcorrupttedbalance() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+	   int balance=0;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = "SELECT * " +
+                  "FROM cards WHERE Status= 2 ";;
+	       rs =  stmt.executeQuery(sql);
+	       
+	     while (rs.next()) {
+          balance= balance+ Integer.parseInt(rs.getString("CardType") );      
+          }
+	 
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return balance;
+   }
+   public int getusedbalancebydate(String fromdate,String todate) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+	   int balance=0;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   PreparedStatement ps=null;
+	//      String sql = "SELECT * " +
+     //             "FROM cards WHERE Status= 1 AND ";;
+	       ps=conn.prepareStatement( "select * "
+	    	      		+ "from cards where   Status=1 AND UpdateDate BETWEEN '"+fromdate+"' AND '"+todate+"'");
+
+  	     rs=  ps.executeQuery();
+
+	     while (rs.next()) {
+          balance= balance+ Integer.parseInt(rs.getString("CardType") );      
+          }
+	 
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return balance;
+   }
+   public int getusedbalance() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+	   int balance=0;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = "SELECT * " +
+                  "FROM cards WHERE Status= 1 ";;
+	       rs =  stmt.executeQuery(sql);
+	       
+	     while (rs.next()) {
+          balance= balance+ Integer.parseInt(rs.getString("CardType") );      
+          }
+	 
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+	return balance;
+   }
+   public int getcount(String cardtype,String status) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+       int count=0;
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	     	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	       String sql = "SELECT * " +
+                  "FROM cards WHERE Status= ? AND CardType= ?";;
+	     
+	      
+                  PreparedStatement ps = null;
+                  ps = conn.prepareStatement(sql);
+                  ps.setString(1,status);
+                  ps.setString(2,cardtype);
+
+                rs= ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+       	     while (rs.next()) {
+                 count++;
+  	          }
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  // //  System.out.println("Goodbye!");
+	   return count;
+   }
+
+   public int getcountbydate(String cardtype,int status,String fromdate, String todate) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+       int count=0;
+
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	     	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+          PreparedStatement ps = null;
+
+                  ps=conn.prepareStatement( "select * "
+  	    	      		+ "from cards where   CardType= ? AND Status=? AND UpdateDate BETWEEN '"+fromdate+"' AND '"+todate+"'");
+                  ps.setString(1,cardtype);
+
+                  ps.setInt(2,status);
+
+
+                rs= ps.executeQuery();
+	           // // //  System.out.println(rs.getString("CardNum"));
+       	     while (rs.next()) {
+                 count++;
+  	          }
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  // //  System.out.println("Goodbye!");
+	   return count;
+   }
+  
+
+}//end JDBCExample
