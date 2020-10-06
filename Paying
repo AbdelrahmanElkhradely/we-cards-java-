@@ -1,0 +1,194 @@
+package algorithms;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import database.DBconnection;
+import selenuim.autofill;
+
+public class Paying {
+	autofill fill;
+	String result;
+	public String city;
+	public String number;
+	public String amount;
+	public int tempamount;
+	public int successfullycharged;
+	private DBconnection db;
+	private List<String> cardsnum;
+	void setresult(String s) {
+		this.result=s;
+	}
+    public String getresult() {
+    	return this.result;
+    }
+    public void pay() throws SQLException{
+    	  
+    	successfullycharged=0;
+   	 db = new DBconnection();
+      int mybalance = db.gettotalbalance();
+      while(mybalance >= this.tempamount  && this.tempamount >= 0) {
+        
+    	   if(this.tempamount==0){
+          	  this.setresult("Insufficient cards in bank....Recharged with "+ successfullycharged);
+                 return;
+    	//  	  this.setresult("Recharged with :"+ successfullycharged );
+              }
+       else if (mybalance >= this.tempamount){
+    	   while(this.tempamount > 0) {
+    		  //  System.out.println("temp amount = "+this.tempamount );
+    		   int size5 =(db.getcount("5", "0"));
+    		   int size10 =(db.getcount("10", "0"));
+    		   int size15 =(db.getcount("15", "0"));
+    		   int size25 =(db.getcount("25", "0"));
+    		   int size30 =(db.getcount("30", "0"));
+    		   int size40 =(db.getcount("40", "0"));
+    		   int size50 =(db.getcount("50", "0"));
+    		   int size60 =(db.getcount("60", "0"));
+    		   int size75 =(db.getcount("75", "0"));
+    		   int size100 =(db.getcount("100", "0"));
+    		   int size150 =(db.getcount("150", "0"));
+
+
+              if(this.tempamount>= 150 && size150 >0) {
+            	  db.getcardswithvalue("150");
+            	   cardsnum= db.cardsnum;
+            	    	payhelper("150",cardsnum.get(0));
+            	    
+              }
+              else if(this.tempamount>= 100 && size100 >0) {
+            	  db.getcardswithvalue("100");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("100",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 75 && size75 >0) {
+            	  db.getcardswithvalue("75");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("75",cardsnum.get(0));
+             } 
+              else if(this.tempamount>= 60 && size60 >0 ) {
+            	  db.getcardswithvalue("60");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("60",cardsnum.get(0));
+           	    
+             } 
+              else if(this.tempamount>= 50 && size50 >0 ) {
+            	  db.getcardswithvalue("50");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("50",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 40 && size40 >0) {
+            	  db.getcardswithvalue("40");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("40",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 30 && size30 >0 ) {
+            	  db.getcardswithvalue("30");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("30",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 25 && size25 >0 ) {
+            	  db.getcardswithvalue("25");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("25",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 15 && size15 >0 ) {
+            	  db.getcardswithvalue("15");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("15",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 10 && size10 >0 ) {
+            	  db.getcardswithvalue("10");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("10",cardsnum.get(0));
+           	    
+             }
+              else if(this.tempamount>= 5  && size5 >0) {
+            	  db.getcardswithvalue("5");
+           	   cardsnum= db.cardsnum;
+           	    	payhelper("5",cardsnum.get(0));
+           	    
+             }
+              
+              else {
+             	  this.setresult("Insufficient cards in bank....Recharged with "+ successfullycharged);
+             	  tempamount=0;
+             	  return;
+             	  
+              }
+    	   }
+    	  	//  this.setresult("Recharged with :"+ successfullycharged );
+
+       }
+       mybalance = db.gettotalbalance();
+      }
+   //   System.out.println("success amount "+ successfullycharged);
+      if(this.tempamount > mybalance){
+     	  this.setresult("Insufficient balance.....Recharged with :"+ successfullycharged);
+       }
+      
+     
+    }
+    public void payhelper(String cardtype , String cardnum) throws SQLException{
+  //  	System.out.println(" i will charge with " + cardtype);
+    	try {
+    	 db = new DBconnection();
+    	 fill = new autofill();
+ 	 fill.fillform(city, number,cardnum);
+ 	  setresult(fill.getresult());
+ 	 cardtype= cardtype.replaceAll("\\s+", "");
+		 int value =0;
+		// System.out.println(this.result);
+ 	  if(this.result.contains("Successful")) {
+ 		  db.updatestatus(cardnum, 1);
+ 		  db.updateusednumber(cardnum,number); 	    
+ 	       value =Integer.parseInt(cardtype);
+ 		  this.tempamount -= value;
+ 		 successfullycharged +=value;
+ 	  }
+ 	  else if(this.result.contains("Invalid ")) {
+
+ 		  db.updatestatus(cardnum, 2);
+ 		 // value =Integer.parseInt(cardtype);
+ 	//  this.tempamount -= value;
+ 	//	 successfullycharged +=value;
+ 	  }
+ 	
+ 	  else {
+ 		  db.updatestatus(cardnum, 2);
+
+ 	//	  value =Integer.parseInt(cardtype);
+ 		// this.tempamount -= value;
+ 		//  successfullycharged +=value;
+
+ 	  }
+    	}catch (Exception e) {
+        	  this.setresult("Error occurred....Recharged with "+ successfullycharged);
+		}
+ 	 
+ 	  
+ 	   
+ 	  
+    }
+	public void settinginfo(String c, String n, String a) {
+	 	city=c;
+	     n= n.replaceAll("\\s+", "");
+	     a= a.replaceAll("\\s+", "");
+    	number=n;
+    	amount=a;
+    	tempamount =Integer.parseInt(amount);
+    	 
+	}
+    
+    
+
+
+
+}
+
