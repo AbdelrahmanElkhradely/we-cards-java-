@@ -367,7 +367,8 @@ public class DBconnection {
 	      stmt = conn.createStatement();
 	   
 	      String sql = "SELECT * " +
-                  "FROM cards WHERE Status= 0 AND CardType= ?";;
+                  "FROM cards WHERE Status= 0 AND CardType= ? ORDER BY CreateDate ASC";
+                 
 	      // rs =  stmt.executeQuery(sql);
                   PreparedStatement ps = null;
                   ps = conn.prepareStatement(sql);
@@ -723,6 +724,58 @@ else
 	  //// //  System.out.println("Goodbye!");
 	return list;
    }
+   public void updatecorrstatus(String cardnum) {
+	   Connection conn = null;
+	   Statement stmt = null;
+//	   ResultSet rs=null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	     	      //STEP 4: Execute a query
+	    //// //  System.out.println("getting data...");
+	      stmt = conn.createStatement();
+	      String sql = "  update cards set Status=0 , UpdateDate=? where CardNum=? AND Status= 2 ";
+	      java.util.Date utilDate = new java.util.Date();
+          java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+	      
+	      // rs =  stmt.executeQuery(sql);
+                  PreparedStatement ps = null;
+                  ps = conn.prepareStatement(sql);
+                 ps.setDate(1, sqlDate);
+                  ps.setString(2,cardnum);
+                  ps.executeUpdate();
+	           // // //  System.out.println(rs.getString("CardNum"));
+        
+        	      
+
+	      // execute the preparedstatement
+	      //System.out.println("data inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+   }
    public void updatestatus(String cardnum,int newstatus) {
 	   Connection conn = null;
 	   Statement stmt = null;
@@ -776,7 +829,6 @@ else
 	   }//end try
 	  //// //  System.out.println("Goodbye!");
    }
-
    public void deletecard(String cardnum) {
 	   Connection conn = null;
 	   Statement stmt = null;
@@ -842,8 +894,7 @@ else
 	     	      //STEP 4: Execute a query
 	    //// //  System.out.println("getting data...");
 	      stmt = conn.createStatement();
-	      String sql = "  update cards set UsedBy=?  where CardNum=? ";
-	     
+	      String sql = "  update cards set UsedBy=?  where CardNum=?  ";
 	      
 	      // rs =  stmt.executeQuery(sql);
                   PreparedStatement ps = null;
