@@ -48,9 +48,17 @@ public class Paying {
     		   int size75 =(db.getcount("75", "0"));
     		   int size100 =(db.getcount("100", "0"));
     		   int size150 =(db.getcount("150", "0"));
-
-
-              if(this.tempamount>= 150 && size150 >0) {
+               
+    		   
+    		   if(this.tempamount==-1) {
+ 	        	  this.setresult("The user number is not exist....Recharged with "+ successfullycharged);
+ 	        	  return;
+    		   }
+    		   else if (this.tempamount== -2) {
+    	        	  this.setresult("The user number is blacklist....Recharged with "+ successfullycharged);
+    	        	  return;
+    		   }
+    		   else if(this.tempamount>= 150 && size150 >0) {
             	  db.getcardswithvalue("150");
             	   cardsnum= db.cardsnum;
             	    	payhelper("150",cardsnum.get(0));
@@ -159,15 +167,19 @@ public class Paying {
  	//  this.tempamount -= value;
  	//	 successfullycharged +=value;
  	  }
- 	
- 	  else {
- 		  db.updatestatus(cardnum, 2);
-
- 	//	  value =Integer.parseInt(cardtype);
- 		// this.tempamount -= value;
- 		//  successfullycharged +=value;
+ 	  else if (this.result.contains("blacklisted")) {
+ 		  this.tempamount=-2;
 
  	  }
+ 	  else {
+ 		  this.tempamount = -1;
+
+ 		//  value =Integer.parseInt(cardtype);
+ 		// this.tempamount -= value;
+ 	//	  successfullycharged +=value;
+
+ 	  }
+
     	}catch (Exception e) {
         	  this.setresult("Error occurred....Recharged with "+ successfullycharged);
 		}
@@ -191,4 +203,3 @@ public class Paying {
 
 
 }
-
