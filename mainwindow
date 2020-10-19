@@ -27,6 +27,7 @@ import org.openqa.selenium.*;
 
 
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.poifs.property.Parent;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -90,6 +91,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JSeparator;
+
+import com.sun.jdi.StackFrame;
 import com.toedter.calendar.JDateChooser;
 
 //import com.toedter.calendar.JDateChooser;
@@ -298,7 +301,7 @@ public class MainWindow  {
 				if(cn.length()==16 &&
 						isnumber(cn)  &&
 						isnumber(sn) &&
-						sn.length() >= 10 && !cardtype.getSelectedItem().toString().isEmpty()) {
+						 !cardtype.getSelectedItem().toString().isEmpty()) {
 			  String result=  db.AddCard(cardtype.getSelectedItem().toString(), CardNumber.getText(),SerialNumber.getText() );
 			  if(result.equals("card number or serial number used before..."));
 			  JOptionPane.showMessageDialog(null, result);
@@ -314,18 +317,18 @@ public class MainWindow  {
 				}
 			}
 		});
-		btnSubmit.setBounds(216, 229, 117, 25);
+		btnSubmit.setBounds(442, 165, 155, 30);
 		panel.add(btnSubmit);
 		
 		JSeparator separator_1 = new JSeparator();
-		separator_1.setBounds(12, 266, 613, 46);
+		separator_1.setBounds(12, 219, 613, 14);
 		panel.add(separator_1);
 		
 	
 		
 		JLabel lblNewLabel_3 = new JLabel("SELECT EXCEL FILE");
 		lblNewLabel_3.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 15));
-		lblNewLabel_3.setBounds(27, 332, 186, 50);
+		lblNewLabel_3.setBounds(27, 245, 186, 50);
 		panel.add(lblNewLabel_3);
 		
 		JButton btnSelectFile = new JButton("SELECT FILE");
@@ -347,17 +350,54 @@ public class MainWindow  {
 					}
 					else {
 						  JOptionPane.showMessageDialog(null, "Invalid file.......");
-
 					}
 				}
 			}
 		}); 
-		btnSelectFile.setBounds(216, 332, 356, 50);
+		btnSelectFile.setBounds(216, 245, 356, 50);
 		panel.add(btnSelectFile);
 		
 		JSeparator separator_19 = new JSeparator();
 		separator_19.setBounds(-81, 0, 800, 14);
 		panel.add(separator_19);
+		
+		JSeparator separator_18 = new JSeparator();
+		separator_18.setBounds(12, 316, 613, 14);
+		panel.add(separator_18);
+		
+		JLabel lblSaveBackup = new JLabel("SAVE BACKUP");
+		lblSaveBackup.setFont(new Font("Dialog", Font.BOLD, 15));
+		lblSaveBackup.setBounds(27, 342, 155, 51);
+		panel.add(lblSaveBackup);
+        JFileChooser jfc = new JFileChooser();
+
+		JButton btnNewButton = new JButton("SAVE");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+		         DBconnection db = new DBconnection();
+					panel.add(jfc);
+
+					int returnValue = jfc.showOpenDialog(null);
+					// int returnValue = jfc.showSaveDialog(null);
+					String r;
+					if (returnValue == JFileChooser.APPROVE_OPTION) {
+						File selectedFile = jfc.getSelectedFile();
+						System.out.println(selectedFile.getAbsolutePath());
+						if(selectedFile.getAbsolutePath().toString().contains("")) {
+							 db.export(selectedFile.getAbsolutePath().toString());
+						     db.deleteallcards();
+								JOptionPane.showMessageDialog(null,"BACKUP IS FINISHED......" );
+
+						}
+						else {
+							  JOptionPane.showMessageDialog(null, "Invalid file.......");
+						}
+					}
+		    
+			}
+		});
+		btnNewButton.setBounds(216, 341, 356, 50);
+		panel.add(btnNewButton);
 		
 
 		
@@ -443,6 +483,13 @@ public class MainWindow  {
 
 		PayInternetPill.add(amount);
 		
+		JFrame f2 = new JFrame();
+		f2.setSize(600, 100);
+        f2.setLocation(400, 400);
+        f2.setTitle("RESULT");
+		JLabel resultlabel = new JLabel("");
+	     f2.getContentPane().add(resultlabel);
+
 		JButton btnPay = new JButton("PAY");
 		btnPay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -459,9 +506,10 @@ public class MainWindow  {
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
-					JOptionPane.showMessageDialog(null, pay.getresult());
-					 
-					
+				//	JOptionPane.showMessageDialog(null, pay.getresult());
+				      resultlabel.setText(pay.getresult());
+					f2.setVisible(true);
+
 				}
 				else
 				{
@@ -471,7 +519,13 @@ public class MainWindow  {
 				
 				phonenumber.setText("");
 				amount.setText("");
+			
+				
+        	
+				//f2.dispose();
+				
 			}
+			
 		});
 		btnPay.setBounds(123, 310, 117, 25);
 		PayInternetPill.add(btnPay);
@@ -1021,7 +1075,7 @@ button.addActionListener(new ActionListener() {
 				    corrmodel.removeRow(i);
 				}
 				DBconnection db = new DBconnection();
-				list=db.getcardswithdate(1, fromdate.toString(), todate.toString());
+				list=db.getcardswithdate(2, fromdate.toString(), todate.toString());
 				int i=0;
       		   for (String[] strArr : list) {
       			   
