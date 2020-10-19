@@ -160,8 +160,8 @@ public class Paying {
  		  this.tempamount -= value;
  		 successfullycharged +=value;
  	  }
- 	  else if(this.result.contains("Invalid ")) {
-
+ 	  else if(this.result.contains("Invalid") || this.result.contains("used before")) {
+//This voucher was used before
  		  db.updatestatus(cardnum, 2);
  		 // value =Integer.parseInt(cardtype);
  	//  this.tempamount -= value;
@@ -169,14 +169,10 @@ public class Paying {
  	  }
  	  else if (this.result.contains("blacklisted")) {
  		  this.tempamount=-2;
-
  	  }
  	  else {
  		  this.tempamount = -1;
 
- 		//  value =Integer.parseInt(cardtype);
- 		// this.tempamount -= value;
- 	//	  successfullycharged +=value;
 
  	  }
 
