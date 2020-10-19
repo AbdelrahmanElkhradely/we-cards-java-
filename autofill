@@ -71,7 +71,7 @@ try {
 	         WebElement phonenumberelement=  driver.findElement(By.name("pPhoneNo"));
 	       phonenumberelement.sendKeys(phonenumber);
 	       WebElement emailelement= driver.findElement(By.name("pEmail"));
-	      emailelement.sendKeys("sahilpay@gmail.com");
+	      emailelement.sendKeys("ahmed@gmail.com");
 	      WebElement verifybuttonelement= driver.findElement(By.xpath("//*[@id=\"content-block\"]/div/app-adsl-payment/div/div/div/form/div[3]/div/div[2]/button\r\n"
 	      		+ ""));
 	      verifybuttonelement.click();
@@ -124,7 +124,14 @@ try {
 	            } catch (Exception e3) {
 	                //  console.log("wrong card exception", ex.message);
 	            }
-
+                //used before
+	           try {
+	            	  WebDriverWait w5 = new WebDriverWait(driver,1);
+	            	w5.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/toast-container/div/div/div[2]/span")));
+	                result =   driver.findElement(By.xpath("/html/body/ecare-app/div/main/div/div/div/app-adsl-payment/div/app-adsl-bbs-payment/div/div/toast-container/div/div/div[2]/span")).getText();
+	            } catch (Exception e3) {
+	                //  console.log("wrong card exception", ex.message);
+	            } 
 	            //successfull payment ressult
 	            try {
 	            	  WebDriverWait w6 = new WebDriverWait(driver,1);
@@ -149,7 +156,7 @@ try {
 		driver.close();
 		
 }catch (Exception e) {
-	System.out.println("error in path ");
+	  JOptionPane.showMessageDialog(null,"error in chromedriver path");
 
 }
 	}
