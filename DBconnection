@@ -1,6 +1,8 @@
 package database;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,9 +12,12 @@ import java.util.List;
 
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
@@ -28,9 +33,147 @@ public class DBconnection {
   public  List<String> getcardsnum() {
 	   return cardsnum;
    }
+  
    //  Database credentials
    static final String USER = "root";
    static final String PASS = "";
+   public void export(String path) {
+       String username = USER;
+       String password = PASS;
+
+       String excelFilePath = path ;
+
+	   Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     // // //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     // //  System.out.println("Creating database...");
+	      stmt = conn.createStatement();
+	      
+           String sql = "SELECT * FROM cards";
+
+   
+           ResultSet result = stmt.executeQuery(sql);
+
+           XSSFWorkbook workbook = new XSSFWorkbook();
+           XSSFSheet sheet = workbook.createSheet("cards");
+
+           writeHeaderLine(sheet);
+
+           writeDataLines(result, workbook, sheet);
+
+           FileOutputStream outputStream = new FileOutputStream(excelFilePath);
+           workbook.write(outputStream);
+           workbook.close();
+
+           stmt.close();
+           //System.out.println("data inserted successfully...");
+     	   }catch(SQLException se){
+     	      //Handle errors for JDBC
+     	      //se.printStackTrace();
+     	   }catch(Exception e){
+     	      //Handle errors for Class.forName
+     	      e.printStackTrace();
+     	   }finally{
+     	      //finally block used to close resources
+     	      try{
+     	         if(stmt!=null)
+     	            stmt.close();
+     	      }catch(SQLException se2){
+     	      }// nothing we can do
+     	      try{
+     	         if(conn!=null)
+     	            conn.close();
+     	      }catch(SQLException se){
+     	         se.printStackTrace();
+     	      }//end finally try
+     	   }//end try
+     	  //// //  System.out.println("Goodbye!");
+        }
+   
+
+   private void writeHeaderLine(XSSFSheet sheet) {
+
+       Row headerRow = sheet.createRow(0);
+
+       Cell headerCell = headerRow.createCell(0);
+       headerCell.setCellValue("Card Type");
+
+       headerCell = headerRow.createCell(1);
+       headerCell.setCellValue("Card Num");
+
+       headerCell = headerRow.createCell(2);
+       headerCell.setCellValue("Card Ser");
+
+       headerCell = headerRow.createCell(3);
+       headerCell.setCellValue("Status");
+
+       headerCell = headerRow.createCell(4);
+       headerCell.setCellValue("Create Date");
+       headerCell = headerRow.createCell(5);
+       headerCell.setCellValue("Update Date");
+       headerCell = headerRow.createCell(6);
+       headerCell.setCellValue("Used By");
+   }
+
+   private void writeDataLines(ResultSet result, XSSFWorkbook workbook,
+           XSSFSheet sheet) throws SQLException {
+       int rowCount = 1;
+
+       while (result.next()) {
+           String cardtype = result.getString("CardType");
+           String cardnum = result.getString("CardNum");
+           String cardser = result.getString("CardSer");
+           int status = result.getInt("Status");
+           Date createdate = result.getDate("CreateDate");
+           Date updatedate = result.getDate("UpdateDate");
+           int usedby = result.getInt("UsedBy");
+
+
+           Row row = sheet.createRow(rowCount++);
+
+           int columnCount = 0;
+           Cell cell = row.createCell(columnCount++);
+           cell.setCellValue(cardtype);
+
+           cell = row.createCell(columnCount++);
+       
+           cell.setCellValue(cardnum);
+            
+           cell = row.createCell(columnCount++);
+           cell.setCellValue(cardser);
+
+           cell = row.createCell(columnCount++);
+           cell.setCellValue(status);
+           
+         
+           cell = row.createCell(columnCount++);
+           CellStyle cellStyle = workbook.createCellStyle();
+           CreationHelper creationHelper = workbook.getCreationHelper();
+           cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-MM-dd"));
+           cell.setCellStyle(cellStyle);
+           cell.setCellValue(createdate);
+
+           cell = row.createCell(columnCount++);
+            cellStyle = workbook.createCellStyle();
+            creationHelper = workbook.getCreationHelper();
+           cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-MM-dd"));
+           cell.setCellStyle(cellStyle);
+           cell.setCellValue(updatedate);
+           
+           cell = row.createCell(columnCount);
+           cell.setCellValue(usedby);
+        	
+       }
+   }
+
    static void CreateDataBase() {
 	   Connection conn = null;
 	   Statement stmt = null;
@@ -227,7 +370,6 @@ public class DBconnection {
                   switch (columnIndex) {
                   case 0:
                       String cardtype =formatter.formatCellValue(nextCell).toString();
-
                       //String cardtype =formatter.formatCellValue( nextCell.getStringCellValue());
                       preparedStmt.setString(1, cardtype);
                       break;
@@ -241,7 +383,6 @@ public class DBconnection {
                      
                   case 2:
                       String cardser =formatter.formatCellValue(nextCell).toString();
-
                      // String cardser =  nextCell.getStringCellValue();
                       preparedStmt.setString(3, cardser);
                   }
@@ -255,23 +396,14 @@ public class DBconnection {
               }              
 
           }
-          /*
-	      preparedStmt.setString (1, cardtype);
-	      preparedStmt.setString (2, cardnum);
-	      preparedStmt.setString (3, cardser);
-*/
+
           workbook.close();
           
           // execute the remaining queries
           preparedStmt.executeBatch();
 
           conn.commit();
-        //  conn.close();
-           
-        //  System.out.printf("Import done in %d ms\n", (end - start));
-	      // execute the preparedstatement
-	    //  preparedStmt.execute();
-	      //System.out.println("data inserted successfully...");
+  
 	      result="Data inserted successfully...";
 	   }catch(SQLException se){
 	      //Handle errors for JDBC
@@ -298,6 +430,134 @@ public class DBconnection {
 	  //// //  System.out.println("Goodbye!");
 	   return result;
    }
+   public String ADDCARDFROMEXCEL(String path) {
+	   String jdbcURL = "jdbc:mysql://localhost:3306/CARDS";
+       String username = USER;
+       String password = PASS;
+
+       String excelFilePath = path;
+
+       int batchSize = 20;
+
+       Connection connection = null;
+
+       try {
+           long start = System.currentTimeMillis();
+            
+           FileInputStream inputStream = new FileInputStream(excelFilePath);
+
+           Workbook workbook = new XSSFWorkbook(inputStream);
+
+           Sheet firstSheet = workbook.getSheetAt(0);
+           Iterator<Row> rowIterator = firstSheet.iterator();
+
+           connection = DriverManager.getConnection(jdbcURL, username, password);
+           connection.setAutoCommit(false);
+ 
+           String sql = "INSERT INTO cards (CardType, CardNum, CardSer) VALUES (?, ?, ?)";
+           PreparedStatement statement = connection.prepareStatement(sql);    
+            
+           int count = 0;
+            
+           rowIterator.next(); // skip the header row
+            
+           while (rowIterator.hasNext()) {
+               Row nextRow = rowIterator.next();
+               Iterator<Cell> cellIterator = nextRow.cellIterator();
+
+               while (cellIterator.hasNext()) {
+                   Cell nextCell = cellIterator.next();
+
+                   int columnIndex = nextCell.getColumnIndex();
+
+                   switch (columnIndex) {
+                   case 0:
+                       String cardtype = nextCell.getStringCellValue();
+                       statement.setString(1, cardtype);
+                       break;
+                   case 1:
+                	   String cardnum = nextCell.getStringCellValue();
+                	   if(cardnum.length() == 16) {
+                       statement.setString(2, cardnum);
+                	   }
+                	   
+                		 
+                   case 2:
+                	   String cardser = nextCell.getStringCellValue();
+                       statement.setString(3, cardser);
+                   }
+
+               }
+                
+               statement.addBatch();
+                
+               if (count % batchSize == 0) {
+                   statement.executeBatch();
+               }              
+
+           }
+
+           workbook.close();
+            
+           // execute the remaining queries
+           statement.executeBatch();
+ 
+           connection.commit();
+           connection.close();
+            
+        
+            result="Import done ";
+       } catch (IOException ex1) {
+           System.out.println("Error reading file");
+           result="error in reading file";
+           ex1.printStackTrace();
+       } catch (SQLException ex2) {
+           System.out.println("Database error");
+           result= " data base error";
+           ex2.printStackTrace();
+       }
+	return result;
+   }
+   public void deleteallcards() {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   ResultSet rs=null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	     //// //  System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+	      //STEP 4: Execute a query
+	     //System.out.println("inserting data...");
+	      stmt = conn.createStatement();
+	   
+	      String sql = "TRUNCATE cards";
+	       stmt.executeUpdate(sql);
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      //se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{
+	      //finally block used to close resources
+	      try{
+	         if(stmt!=null)
+	            stmt.close();
+	      }catch(SQLException se2){
+	      }// nothing we can do
+	      try{
+	         if(conn!=null)
+	            conn.close();
+	      }catch(SQLException se){
+	         se.printStackTrace();
+	      }//end finally try
+	   }//end try
+	  //// //  System.out.println("Goodbye!");
+   }
    public ResultSet getallcards() {
 	   Connection conn = null;
 	   Statement stmt = null;
@@ -315,7 +575,7 @@ public class DBconnection {
 	      stmt = conn.createStatement();
 	   
 	      String sql = "SELECT * " +
-                  "FROM cards WHERE Status= 0 ";;
+                  "FROM cards WHERE Status= 0 ORDER BY CardType, CardSer DESC";;
 	       rs =  stmt.executeQuery(sql);
 	   /*   while (rs.next()) {
              // //  System.out.println(rs.getString("CardType") + "\t" + 
@@ -367,7 +627,7 @@ public class DBconnection {
 	      stmt = conn.createStatement();
 	   
 	      String sql = "SELECT * " +
-                  "FROM cards WHERE Status= 0 AND CardType= ? ORDER BY CreateDate ASC";
+                  "FROM cards WHERE Status= 0 AND CardType= ? ORDER BY CardType, CreateDate ASC";
                  
 	      // rs =  stmt.executeQuery(sql);
                   PreparedStatement ps = null;
@@ -430,7 +690,7 @@ public class DBconnection {
 
 	      if(status== 0) {
 	    	     ps=conn.prepareStatement( "select * "
-	    	      		+ "from cards where Status=? AND CreateDate BETWEEN '"+fromdate+"' AND '"+todate+"' ");
+	    	      		+ "from cards where Status=? AND CreateDate BETWEEN '"+fromdate+"' AND '"+todate+"' ORDER BY CardType, CardSer DESC ");
                  ps.setInt(1,status);
 
 	      }
@@ -512,7 +772,7 @@ public class DBconnection {
 
 	    
 	    	     ps=conn.prepareStatement( "select * "
-	    	      		+ "from cards where Status= 1  AND UsedBy = '"+phonenumber+"' ORDER BY UpdateDate DESC");
+	    	      		+ "from cards where Status= 1  AND UsedBy = '"+phonenumber+"' ORDER BY CardType, CardSer DESC");
 
 	      
 	      // rs =  stmt.executeQuery(sql);
@@ -589,7 +849,7 @@ public class DBconnection {
 
 	    
 	    	     ps=conn.prepareStatement( "select * "
-	    	      		+ "from cards where Status= 1  AND UsedBy = '"+phonenumber+"' AND UpdateDate= '"+date+"' ORDER BY UpdateDate DESC");
+	    	      		+ "from cards where Status= 1  AND UsedBy = '"+phonenumber+"' AND UpdateDate= '"+date+"' ORDER BY CardType, CardSer DESC ");
 
 	      
 	      // rs =  stmt.executeQuery(sql);
@@ -665,12 +925,12 @@ public class DBconnection {
           PreparedStatement ps = null;
 if(status==0) {
 	    	     ps=conn.prepareStatement( "select * "
-	    	      		+ "from cards where Status=? ORDER BY CreateDate DESC");
+	    	      		+ "from cards where Status=? ORDER BY  CardSer ASC , CardType ASC");
 }
 else
 {
 	 ps=conn.prepareStatement( "select * "
-	      		+ "from cards where Status=? ORDER BY UpdateDate DESC");
+	      		+ "from cards where Status=? ORDER BY UpdateDate ASC , CardType ASC");
 }
 	             ps.setInt(1, status);
 	      // rs =  stmt.executeQuery(sql);
