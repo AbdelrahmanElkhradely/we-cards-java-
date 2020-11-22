@@ -176,7 +176,8 @@ public class Paying {
 
  	  }
 
-    	}catch (Exception e) {
+    	}
+    	catch (Exception e) {
         	  this.setresult("Error occurred....Recharged with "+ successfullycharged);
 		}
  	 
