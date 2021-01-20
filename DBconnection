@@ -1509,6 +1509,9 @@ else
 	  // //  System.out.println("Goodbye!");
 	   return count;
    }
-  
+  public static void main(String[] args) {
+	DBconnection D= new DBconnection();
+	D.CreateTableCards();
+}
 
 }//end JDBCExample
