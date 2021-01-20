@@ -1669,5 +1669,6 @@ button.addActionListener(new ActionListener() {
 		});
 		lblInquiry.setBounds(613, 12, 87, 34);
 		frame.getContentPane().add(lblInquiry);
+		
 	}
 }
