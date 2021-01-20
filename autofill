@@ -1,7 +1,6 @@
 package selenuim;
 
 import org.openqa.selenium.By;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -71,7 +70,7 @@ try {
 	         WebElement phonenumberelement=  driver.findElement(By.name("pPhoneNo"));
 	       phonenumberelement.sendKeys(phonenumber);
 	       WebElement emailelement= driver.findElement(By.name("pEmail"));
-	      emailelement.sendKeys("ahmed@gmail.com");
+	      emailelement.sendKeys("saad@gmail.com");
 	      WebElement verifybuttonelement= driver.findElement(By.xpath("//*[@id=\"content-block\"]/div/app-adsl-payment/div/div/div/form/div[3]/div/div[2]/button\r\n"
 	      		+ ""));
 	      verifybuttonelement.click();
@@ -132,7 +131,6 @@ try {
 	            } catch (Exception e3) {
 	                //  console.log("wrong card exception", ex.message);
 	            } 
-	            //successfull payment ressult
 	            try {
 	            	  WebDriverWait w6 = new WebDriverWait(driver,1);
 
