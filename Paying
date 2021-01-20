@@ -51,7 +51,10 @@ public class Paying {
                
     		   
     		   if(this.tempamount==-1) {
- 	        	  this.setresult("The user number is not exist....Recharged with "+ successfullycharged);
+
+    	        	  this.setresult("Error occurred !!!!!!!!"
+    	        	  		+ "....Recharged with "+ successfullycharged + "there is a card with unknown status ...... please check corrupted cards ") ;
+ 	        	 
  	        	  return;
     		   }
     		   else if (this.tempamount== -2) {
@@ -171,6 +174,8 @@ public class Paying {
  		  this.tempamount=-2;
  	  }
  	  else {
+ 		  db.updatestatus(cardnum, 2);
+         
  		  this.tempamount = -1;
 
 
@@ -178,7 +183,10 @@ public class Paying {
 
     	}
     	catch (Exception e) {
-        	  this.setresult("Error occurred....Recharged with "+ successfullycharged);
+   		  this.tempamount = -1;
+
+        	  this.setresult("Error occurred !!!!!!!!"
+        	  		+ "....Recharged with "+ successfullycharged + "there is a card with unknown status ..... please check  ") ;
 		}
  	 
  	  
